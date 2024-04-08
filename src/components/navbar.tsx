@@ -35,7 +35,7 @@ export default function NavBar({ switchProfileEnabled = false }) {
                 className="cursor-pointer"
                 onClick={goBack}
             />
-            <span className="text-4xl font-extrabold">ResultLy</span>
+            <span className="text-4xl font-extrabold select-none">ResultLy</span>
             <span className="flex items-center gap-4 relative">
                 {switchProfileEnabled && defaultValue && (
                     <Select

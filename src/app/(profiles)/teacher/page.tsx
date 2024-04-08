@@ -2,7 +2,6 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Teacher",
 };
-
 export default function Teacher() {
     return (
         <>

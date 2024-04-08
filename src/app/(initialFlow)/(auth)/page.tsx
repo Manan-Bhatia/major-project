@@ -48,7 +48,6 @@ export default function Home() {
             <div className="h-full flex items-center justify-center">
                 <div className="card">
                     <h1>Welcome to the University Result Analysis Portal!</h1>
-                    <h2>Login</h2>
                     <p>Please enter your credentials to access the portal.</p>
                     <Form {...form}>
                         <form
