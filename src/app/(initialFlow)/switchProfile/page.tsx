@@ -1,14 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Separator } from "@/components/ui/separator";
 import { FaUser, FaUserCog } from "react-icons/fa";
 
 export default function Home() {
     const router = useRouter();
     return (
         <>
-            <div className="h-full flex items-center justify-center">
-                <div className="flex gap-4 h-1/5 items-center">
+            <div className="h-full flex flex-col items-center justify-center gap-8">
+                <h1>Choose Profile</h1>
+                <div className="flex gap-4 items-center justify-center">
                     <div
                         onClick={() => {
                             router.push("/teacher");
@@ -18,11 +18,7 @@ export default function Home() {
                         <FaUser size={64} />
                         <h3>Teacher</h3>
                     </div>
-                    <Separator
-                        orientation="vertical"
-                        decorative
-                        className="w-0.5"
-                    />
+                    <h3>OR</h3>
                     <div
                         onClick={() => {
                             router.push("/admin");

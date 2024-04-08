@@ -1,7 +1,7 @@
 "use client";
 import { IoChevronBack } from "react-icons/io5";
 import { ThemeToggle } from "@/components/ui/themeToggle";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
     Select,
@@ -10,7 +10,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { usePathname } from "next/navigation";
 
 export default function NavBar({ switchProfileEnabled = false }) {
     const router = useRouter();
@@ -26,6 +25,9 @@ export default function NavBar({ switchProfileEnabled = false }) {
             if (pathName.split("/")[1] === "admin") setDefaultValue("Admin");
         }
     }, []);
+    const handleProfileChange = (e: string) => {
+        router.push(`/${e.toLowerCase()}`);
+    };
     return (
         <header className="flex items-center justify-between border-b px-2 md:px-20 md:py-5 py-4">
             <IoChevronBack
@@ -36,7 +38,10 @@ export default function NavBar({ switchProfileEnabled = false }) {
             <span className="text-4xl font-extrabold">ResultLy</span>
             <span className="flex items-center gap-4 relative">
                 {switchProfileEnabled && defaultValue && (
-                    <Select defaultValue={defaultValue}>
+                    <Select
+                        defaultValue={defaultValue}
+                        onValueChange={(e) => handleProfileChange(e)}
+                    >
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Switch Profile" />
                         </SelectTrigger>

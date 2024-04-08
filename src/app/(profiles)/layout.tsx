@@ -7,7 +7,9 @@ export default function DashboardLayout({
     return (
         <main className="flex flex-col h-dvh">
             <NavBar switchProfileEnabled />
-            <section className="flex-1">{children}</section>
+            <section className="flex-1 p-2 md:px-20 md:py-5">
+                {children}
+            </section>
         </main>
     );
 }
