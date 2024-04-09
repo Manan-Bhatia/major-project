@@ -51,18 +51,12 @@ export default function NavBar({ switchProfileEnabled = false }) {
             </span>
             <span className="flex items-center gap-4 relative">
                 {switchProfileEnabled && defaultValue && (
-                    <Select
-                        defaultValue={defaultValue}
-                        onValueChange={(e) => handleProfileChange(e)}
+                    <Button
+                        variant="outline"
+                        onClick={() => router.push("/switchProfile")}
                     >
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Switch Profile" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Teacher">Teacher</SelectItem>
-                            <SelectItem value="Admin">Admin</SelectItem>
-                        </SelectContent>
-                    </Select>
+                        Switch Profile
+                    </Button>
                 )}
                 <ThemeToggle />
                 {token && (

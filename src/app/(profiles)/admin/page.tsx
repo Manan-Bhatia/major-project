@@ -1,8 +1,4 @@
-import { Metadata } from "next";
-export const metadata: Metadata = {
-    title: "Admin",
-};
-
+"use client";
 import SummaryCard from "@/components/summaryCard";
 export default function Admin() {
     const data = [
