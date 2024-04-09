@@ -12,6 +12,15 @@ export const metadata: Metadata = {
     description: "ResultLy: Result Management System",
 };
 
+declare global {
+    interface Window {
+        electronAPI: {
+            on: (event: string, callback: (...args: any[]) => void) => void;
+            send: (channel: string, args: any) => void;
+            receiveTokenFromMain: (callback: (...args: any[]) => void) => void;
+        };
+    }
+}
 export default function RootLayout({
     children,
 }: Readonly<{

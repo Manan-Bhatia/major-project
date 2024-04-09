@@ -1,11 +1,27 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { FaUser, FaUserCog } from "react-icons/fa";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
     const router = useRouter();
+    const handleClick = async () => {
+        try {
+            const res = await axios.get(
+                "https://resultlymsi.pythonanywhere.com/accounts/test_login/",
+                {
+                    withCredentials: true,
+                }
+            );
+            console.log(res);
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };
     return (
         <>
+            <Button onClick={handleClick}>Click</Button>
             <div className="h-full flex flex-col items-center justify-center gap-8">
                 <h1>Choose Profile</h1>
                 <div className="flex gap-4 items-center justify-center">

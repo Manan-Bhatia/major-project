@@ -1,6 +1,7 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron/main");
 const serve = require("electron-serve");
 const path = require("path");
+const Store = require("electron-store");
 
 const appServe = app.isPackaged
     ? serve({
@@ -8,13 +9,30 @@ const appServe = app.isPackaged
       })
     : null;
 
+const storage = new Store();
+
 const createWindow = () => {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
+            webSecurity: false,
         },
+    });
+    ipcMain.on("save-token", (event, token) => {
+        console.log("main");
+        storage.set("token", token);
+    });
+    ipcMain.on("rendererReady", () => {
+        console.log("ready");
+        const token = storage.get("token") || "";
+        console.log(token);
+        win.webContents.send("tokenToRenderer", token);
+    });
+    ipcMain.on("logout", () => {
+        console.log("loggin out");
+        storage.delete("token");
     });
 
     if (app.isPackaged) {

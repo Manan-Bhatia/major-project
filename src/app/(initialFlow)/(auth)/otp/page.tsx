@@ -20,6 +20,8 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from "@/components/ui/input-otp";
+import axios from "axios";
+import { setCookie } from "cookies-next";
 
 export default function OTP() {
     const router = useRouter();
@@ -36,13 +38,31 @@ export default function OTP() {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        setSubmitting(true);
-        console.log("otp = ", values);
-        setTimeout(() => {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        try {
+            setSubmitting(true);
+            const res = await axios.post(
+                "https://resultlymsi.pythonanywhere.com/accounts/login_teacher/",
+                {
+                    email: localStorage.getItem("email") || "",
+                    otp: values.pin,
+                }
+            );
+            if (res.status === 200) {
+                localStorage.removeItem("email");
+                setCookie("token", res.data.token);
+                try {
+                    window.electronAPI.send("save-token", res.data.token);
+                } catch (error) {
+                    console.log("Error: ", error);
+                }
+                router.replace("/switchProfile");
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally {
             setSubmitting(false);
-            router.replace("/switchProfile");
-        }, 2000);
+        }
     }
     // submitting
     const [submitting, setSubmitting] = useState<boolean>(false);

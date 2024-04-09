@@ -10,7 +10,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
+import { BiLogOut } from "react-icons/bi";
+import { Button } from "@/components/ui/button";
+import { getCookie, deleteCookie } from "cookies-next";
 export default function NavBar({ switchProfileEnabled = false }) {
     const router = useRouter();
     const goBack = () => {
@@ -28,6 +30,15 @@ export default function NavBar({ switchProfileEnabled = false }) {
     const handleProfileChange = (e: string) => {
         router.push(`/${e.toLowerCase()}`);
     };
+
+    // token
+    const [token, setToken] = useState<boolean>(false);
+    useEffect(() => {
+        const cookie = getCookie("token");
+        if (cookie != "" && cookie != undefined) setToken(true);
+        else setToken(false);
+    }, [pathName]);
+
     return (
         <header className="flex items-center justify-between border-b px-2 md:px-20 md:py-5 py-4">
             <IoChevronBack
@@ -35,7 +46,9 @@ export default function NavBar({ switchProfileEnabled = false }) {
                 className="cursor-pointer"
                 onClick={goBack}
             />
-            <span className="text-4xl font-extrabold select-none">ResultLy</span>
+            <span className="text-4xl font-extrabold select-none">
+                ResultLy
+            </span>
             <span className="flex items-center gap-4 relative">
                 {switchProfileEnabled && defaultValue && (
                     <Select
@@ -52,6 +65,20 @@ export default function NavBar({ switchProfileEnabled = false }) {
                     </Select>
                 )}
                 <ThemeToggle />
+                {token && (
+                    <Button
+                        variant="outline"
+                        className="flex items-center gap-2 capitalize text-base"
+                        onClick={() => {
+                            window.electronAPI.send("logout", "logout");
+                            deleteCookie("token");
+                            router.replace("/");
+                        }}
+                    >
+                        Logout
+                        <BiLogOut size={20} />
+                    </Button>
+                )}
             </span>
         </header>
     );

@@ -30,7 +30,6 @@ export default function DashboardLayout({
                     <Breadcrumb>
                         <BreadcrumbList className="capitalize">
                             {routes.map((route, index) => {
-                                console.log(route);
                                 if (routes.length === index + 1) return;
                                 return (
                                     <>

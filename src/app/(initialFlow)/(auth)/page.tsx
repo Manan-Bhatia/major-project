@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Form,
     FormControl,
@@ -16,8 +16,20 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
+import { setCookie } from "cookies-next";
 
 export default function Home() {
+    if (typeof window !== undefined)
+        useEffect(() => {
+            window.electronAPI.send("rendererReady", "ready");
+            window.electronAPI.receiveTokenFromMain((token) => {
+                if (token != "" && token != undefined) {
+                    setCookie("token", token);
+                    router.replace("/switchProfile");
+                }
+            });
+        }, []);
     const router = useRouter();
     const formSchema = z.object({
         email: z
@@ -32,13 +44,21 @@ export default function Home() {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        setSubmitting(true);
-        console.log("email = ", values);
-        setTimeout(() => {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        try {
+            setSubmitting(true);
+            console.log(values);
+            const res = await axios.post(
+                "https://resultlymsi.pythonanywhere.com/accounts/send_otp/",
+                values
+            );
+            localStorage.setItem("email", values.email);
+            if (res.status === 200) router.push("/otp");
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally {
             setSubmitting(false);
-            router.push("/otp");
-        }, 2000);
+        }
     }
     // submitting
     const [submitting, setSubmitting] = useState<boolean>(false);
