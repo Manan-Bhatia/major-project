@@ -22,8 +22,14 @@ import {
 } from "@/components/ui/input-otp";
 import axios from "axios";
 import { setCookie } from "cookies-next";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function OTP() {
+    // form status
+    const [formStatus, setformStatus] = useState<{
+        type: "success" | "error";
+        message: string;
+    } | null>();
     const router = useRouter();
     const formSchema = z.object({
         pin: z.string().min(4, {
@@ -49,17 +55,29 @@ export default function OTP() {
                 }
             );
             if (res.status === 200) {
-                localStorage.removeItem("email");
-                setCookie("token", res.data.token);
-                try {
-                    window.electronAPI.send("save-token", res.data.token);
-                } catch (error) {
-                    console.log("Error: ", error);
-                }
-                router.replace("/switchProfile");
+                setformStatus({
+                    type: "success",
+                    message: res.data.status,
+                });
+                setTimeout(() => {
+                    localStorage.removeItem("email");
+                    setCookie("token", res.data.token);
+                    try {
+                        window.electronAPI.send("save-token", res.data.token);
+                    } catch (error) {
+                        console.log("Error: ", error);
+                    }
+                    router.replace("/switchProfile");
+                }, 1000);
             }
-        } catch (error) {
-            console.log("Error: ", error);
+        } catch (error: any) {
+            setformStatus({
+                type: "error",
+                message: error.response.data,
+            });
+            setTimeout(() => {
+                setformStatus(null);
+            }, 3500);
         } finally {
             setSubmitting(false);
         }
@@ -127,6 +145,24 @@ export default function OTP() {
                                     <span>Submit</span>
                                 )}
                             </Button>
+                            {formStatus && (
+                                <Alert
+                                    variant={
+                                        formStatus.type === "success"
+                                            ? "default"
+                                            : "destructive"
+                                    }
+                                >
+                                    <AlertTitle>
+                                        {formStatus.type === "success"
+                                            ? "Success!"
+                                            : "An Error Occurred!"}
+                                    </AlertTitle>
+                                    <AlertDescription>
+                                        {formStatus.message}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                         </form>
                     </Form>
                 </div>

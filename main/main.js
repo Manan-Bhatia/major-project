@@ -21,17 +21,13 @@ const createWindow = () => {
         },
     });
     ipcMain.on("save-token", (event, token) => {
-        console.log("main");
         storage.set("token", token);
     });
     ipcMain.on("rendererReady", () => {
-        console.log("ready");
         const token = storage.get("token") || "";
-        console.log(token);
         win.webContents.send("tokenToRenderer", token);
     });
     ipcMain.on("logout", () => {
-        console.log("loggin out");
         storage.delete("token");
     });
 

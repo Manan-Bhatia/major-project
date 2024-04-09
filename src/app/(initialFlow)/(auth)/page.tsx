@@ -16,10 +16,13 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
+import axios, { formToJSON } from "axios";
 import { setCookie } from "cookies-next";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function Home() {
+    // loading
+    const [loading, setLoading] = useState<boolean>(true);
     if (typeof window !== undefined)
         useEffect(() => {
             window.electronAPI.send("rendererReady", "ready");
@@ -28,9 +31,15 @@ export default function Home() {
                     setCookie("token", token);
                     router.replace("/switchProfile");
                 }
+                setLoading(false);
             });
         }, []);
     const router = useRouter();
+    // form message
+    const [formStatus, setFormStatus] = useState<{
+        type: "success" | "error";
+        message: string;
+    } | null>();
     const formSchema = z.object({
         email: z
             .string()
@@ -53,9 +62,24 @@ export default function Home() {
                 values
             );
             localStorage.setItem("email", values.email);
-            if (res.status === 200) router.push("/otp");
-        } catch (error) {
-            console.log("Error: ", error);
+            if (res.status === 200) {
+                setFormStatus({
+                    type: "success",
+                    message: "OTP has been sent successfully!",
+                });
+                setTimeout(() => {
+                    router.push("/otp");
+                    setFormStatus(null);
+                }, 1000);
+            }
+        } catch (error: any) {
+            setFormStatus({
+                type: "error",
+                message: error.response.data.error,
+            });
+            setTimeout(() => {
+                setFormStatus(null);
+            }, 3500);
         } finally {
             setSubmitting(false);
         }
@@ -66,47 +90,76 @@ export default function Home() {
     return (
         <>
             <div className="h-full flex items-center justify-center">
-                <div className="card">
-                    <h1>Welcome to the University Result Analysis Portal!</h1>
-                    <p>Please enter your credentials to access the portal.</p>
-                    <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-6"
-                        >
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Email"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={submitting}
+                {loading ? (
+                    <div className="flex gap-4 items-center">
+                        <h1>Loading...</h1>
+                        <Loader2 className="animate-spin" size={60} />
+                    </div>
+                ) : (
+                    <div className="card">
+                        <h1>
+                            Welcome to the University Result Analysis Portal!
+                        </h1>
+                        <p>
+                            Please enter your credentials to access the portal.
+                        </p>
+                        <Form {...form}>
+                            <form
+                                onSubmit={form.handleSubmit(onSubmit)}
+                                className="space-y-6"
                             >
-                                {submitting ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        <span>Please wait</span>
-                                    </>
-                                ) : (
-                                    <span>Submit</span>
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Email</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Email"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button
+                                    type="submit"
+                                    className="w-full"
+                                    disabled={submitting}
+                                >
+                                    {submitting ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            <span>Please wait</span>
+                                        </>
+                                    ) : (
+                                        <span>Submit</span>
+                                    )}
+                                </Button>
+                                {formStatus && (
+                                    <Alert
+                                        variant={
+                                            formStatus.type === "success"
+                                                ? "default"
+                                                : "destructive"
+                                        }
+                                    >
+                                        <AlertTitle>
+                                            {formStatus.type === "success"
+                                                ? "Success!"
+                                                : "An Error Occurred!"}
+                                        </AlertTitle>
+                                        <AlertDescription>
+                                            {formStatus.message}
+                                        </AlertDescription>
+                                    </Alert>
                                 )}
-                            </Button>
-                        </form>
-                    </Form>
-                </div>
+                            </form>
+                        </Form>
+                    </div>
+                )}
             </div>
         </>
     );
