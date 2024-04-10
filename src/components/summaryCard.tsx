@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 export default function SummaryCard({
     props,
     className = "",
@@ -27,7 +28,6 @@ export default function SummaryCard({
         columns: string[];
         data: { [key: string]: string }[];
         detailedViewRoute: string;
-        totalCount: number;
     };
     className?: string;
 }) {
@@ -43,28 +43,50 @@ export default function SummaryCard({
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            {props.columns.map((columnName) => (
-                                <TableHead className="capitalize">
+                            {props.columns.map((columnName, index) => (
+                                <TableHead className="capitalize" key={index}>
                                     {columnName}
                                 </TableHead>
                             ))}
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
-                        {props.data.map((row) => (
-                            <TableRow>
-                                {props.columns.map((key: string, index) => (
-                                    <TableCell className="font-medium">
-                                        {row[key.toLowerCase()]}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableBody>
+
+                    {props.data.length > 0 ? (
+                        <TableBody>
+                            {props.data.slice(0, 3).map((row, index) => (
+                                <TableRow key={index}>
+                                    {props.columns.map((key: string, index) => (
+                                        <TableCell
+                                            className="font-medium"
+                                            key={index}
+                                        >
+                                            {row[key.toLowerCase()]}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    ) : (
+                        <TableBody>
+                            {[1, 2, 3].map((index) => (
+                                <TableRow key={index}>
+                                    {props.columns.map((index) => (
+                                        <TableCell key={index}>
+                                            <Skeleton className="h-5" />
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    )}
                 </Table>
             </CardContent>
             <CardFooter className="justify-between">
-                <p>Count: {props.totalCount}</p>
+                {props.data.length > 0 ? (
+                    <p>Total Count: {props.data.length}</p>
+                ) : (
+                    <Skeleton className="h-5 w-20" />
+                )}
                 <Button variant="outline" className="capitalize" asChild>
                     <Link href={props.detailedViewRoute}>View More</Link>
                 </Button>
