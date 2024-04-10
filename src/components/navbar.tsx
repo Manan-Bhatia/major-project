@@ -13,6 +13,7 @@ import {
 import { BiLogOut } from "react-icons/bi";
 import { Button } from "@/components/ui/button";
 import { getCookie, deleteCookie } from "cookies-next";
+import axios from "axios";
 export default function NavBar({ switchProfileEnabled = false }) {
     const router = useRouter();
     const goBack = () => {
@@ -38,6 +39,16 @@ export default function NavBar({ switchProfileEnabled = false }) {
         if (cookie != "" && cookie != undefined) setToken(true);
         else setToken(false);
     }, [pathName]);
+
+    const handleAdminLogout = async () => {
+        try {
+            const res = await axios.get(
+                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/logout/"
+            );
+        } catch (error) {
+            console.log("Error logging out admin", error);
+        }
+    };
 
     return (
         <header className="flex items-center justify-between border-b px-2 md:px-20 md:py-5 py-4">
@@ -65,6 +76,7 @@ export default function NavBar({ switchProfileEnabled = false }) {
                         className="flex items-center gap-2 capitalize text-base"
                         onClick={() => {
                             window.electronAPI.send("logout", "logout");
+                            handleAdminLogout();
                             deleteCookie("token");
                             router.replace("/");
                         }}

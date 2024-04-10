@@ -52,6 +52,15 @@ export default function Home() {
             email: "",
         },
     });
+    const handleClick = async () => {
+        try {
+            const res = await axios.get(
+                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/index/"
+            );
+        } catch (error) {
+            console.log("error", error);
+        }
+    };
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
@@ -89,6 +98,7 @@ export default function Home() {
 
     return (
         <>
+            <Button onClick={handleClick}>Click</Button>
             <div className="h-full flex items-center justify-center">
                 {loading ? (
                     <div className="flex gap-4 items-center">
