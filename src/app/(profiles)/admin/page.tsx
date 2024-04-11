@@ -54,6 +54,7 @@ export default function Admin() {
                             title: "Subjects",
                             description: "add, delete or update subjects",
                             columns: ["Code", "Name"],
+                            displayHeaders: ["Code", "Name"],
                             data: data,
                             detailedViewRoute: "/admin/subjects",
                         }}
@@ -64,6 +65,11 @@ export default function Admin() {
                             title: "Teachers",
                             description: "add, delete or update Teachers",
                             columns: ["first_name", "last_name", "email"],
+                            displayHeaders: [
+                                "First Name",
+                                "Last Name",
+                                "Email",
+                            ],
                             data: dataTeahcer,
                             detailedViewRoute: "/admin/teachers",
                         }}
@@ -74,6 +80,7 @@ export default function Admin() {
                             title: "Courses",
                             description: "add, delete or update Courses",
                             columns: ["Code", "Name"],
+                            displayHeaders: ["Code", "Name"],
                             data: data,
                             detailedViewRoute: "/admin/courses",
                         }}

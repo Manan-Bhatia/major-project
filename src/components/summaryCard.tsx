@@ -26,6 +26,7 @@ export default function SummaryCard({
         title: string;
         description: string;
         columns: string[];
+        displayHeaders: string[];
         data: { [key: string]: string }[];
         detailedViewRoute: string;
     };
@@ -43,8 +44,11 @@ export default function SummaryCard({
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            {props.columns.map((columnName, index) => (
-                                <TableHead className="capitalize" key={index}>
+                            {props.displayHeaders.map((columnName, index) => (
+                                <TableHead
+                                    className="capitalize md:text-nowrap"
+                                    key={index}
+                                >
                                     {columnName}
                                 </TableHead>
                             ))}

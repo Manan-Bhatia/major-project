@@ -31,11 +31,16 @@ export default function DashboardLayout({
                         <BreadcrumbList className="capitalize">
                             {routes.map((route, index) => {
                                 if (routes.length === index + 1) return;
+                                const accumulatedRoutes = routes.slice(
+                                    0,
+                                    index + 1
+                                );
+                                const joinedRoute = accumulatedRoutes.join("/");
                                 return (
                                     <>
                                         <BreadcrumbItem>
                                             <BreadcrumbLink asChild>
-                                                <Link href={`/${route}`}>
+                                                <Link href={`/${joinedRoute}`}>
                                                     {route}
                                                 </Link>
                                             </BreadcrumbLink>
