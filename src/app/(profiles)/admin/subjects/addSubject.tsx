@@ -134,7 +134,7 @@ export default function AddSubject({
         message: string[];
     } | null>();
     return (
-        <div>
+        <div className="rounded-lg border flex justify-center py-4">
             <div className="w-2/5 space-y-6 rounded-lg border p-4">
                 <Form {...form}>
                     <form
