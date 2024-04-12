@@ -23,7 +23,9 @@ export function DataTablePagination<TData>({
     table,
 }: DataTablePaginationProps<TData>) {
     return (
-        <div className="flex items-center justify-end px-2 pt-4">
+        <div className="flex items-center justify-between px-2 pt-4">
+            <div>Total Row(s) Count: {table.getRowCount()}</div>
+
             <div className="flex items-center space-x-6 lg:space-x-8">
                 <div className="flex items-center space-x-2">
                     <p className="text-sm font-medium">Rows per page</p>

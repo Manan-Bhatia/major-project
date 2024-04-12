@@ -54,7 +54,8 @@ export default function DataTableSkeleton({ columns }: { columns: number }) {
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end px-2 pt-4">
+            <div className="flex items-center justify-between px-2 pt-4">
+                <Skeleton className="w-60 h-5" />
                 <Skeleton className="w-72 h-5" />
             </div>
         </div>

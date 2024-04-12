@@ -13,7 +13,7 @@ import {
     CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 
-export default function Subjects() {
+export default function Teachers() {
     const router = useRouter();
     const [data, setdata] = useState<Teacher[]>();
     const handleRefreshData = () => {

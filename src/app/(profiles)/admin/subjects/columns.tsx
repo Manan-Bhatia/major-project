@@ -20,28 +20,35 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import UpdateCourse from "./updateCourse";
-export type Course = {
+import UpdateCourse from "./updateSubject";
+export type Subject = {
     pk: number;
     delete_url: string;
     update_url: string;
-    abbreviation: string;
-    name: string;
-    no_of_semesters: number;
-    no_shifts: number;
+    courseName: string;
+    course: number;
+    subject: string;
+    code: string;
+    credit: number;
+    semester: number;
+    non_university: boolean;
+    is_practical: boolean;
 };
 export const Fields = [
-    "name",
-    "abbreviation",
-    "no_of_semesters",
-    "no_shifts",
+    "course",
+    "subject",
+    "code",
+    "credit",
+    "is_not_university",
+    "semester",
+    "is_practical",
     "pk",
 ];
 
-export const columns: ColumnDef<Course>[] = [
+export const columns: ColumnDef<Subject>[] = [
     {
-        accessorKey: "name",
-        id: "Name",
+        accessorKey: "subject",
+        id: "Subject",
         header: ({ column }) => {
             return (
                 <Button
@@ -50,15 +57,15 @@ export const columns: ColumnDef<Course>[] = [
                         column.toggleSorting(column.getIsSorted() === "asc")
                     }
                 >
-                    Name
+                    Subject
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
     },
     {
-        accessorKey: "abbreviation",
-        id: "Abbreviation",
+        accessorKey: "code",
+        id: "Code",
         header: ({ column }) => {
             return (
                 <Button
@@ -67,15 +74,32 @@ export const columns: ColumnDef<Course>[] = [
                         column.toggleSorting(column.getIsSorted() === "asc")
                     }
                 >
-                    Abbreviation
+                    Code
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
     },
     {
-        accessorKey: "no_of_semesters",
-        id: "Semesters",
+        accessorKey: "courseName",
+        id: "Course",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Course
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "semester",
+        id: "Semester",
         enableColumnFilter: false,
         header: ({ column }) => {
             return (
@@ -85,15 +109,16 @@ export const columns: ColumnDef<Course>[] = [
                         column.toggleSorting(column.getIsSorted() === "asc")
                     }
                 >
-                    Semesters
+                    Semester
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
     },
+
     {
-        accessorKey: "no_shifts",
-        id: "Shifts",
+        accessorKey: "credit",
+        id: "Credit",
         enableColumnFilter: false,
         header: ({ column }) => {
             return (
@@ -103,23 +128,77 @@ export const columns: ColumnDef<Course>[] = [
                         column.toggleSorting(column.getIsSorted() === "asc")
                     }
                 >
-                    Shifts
+                    Credit
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
     },
     {
-        id: "actions",
+        accessorKey: "non_university",
+        id: "Non University Subject",
+        enableColumnFilter: false,
+        cell: ({ row }) => {
+            const course = row.original;
+            if (course.is_practical) {
+                return "Yes";
+            } else {
+                return "No";
+            }
+        },
+
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Non University Subject
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "is_practical",
+        id: "Practical Subject",
+        enableColumnFilter: false,
+        cell: ({ row }) => {
+            const course = row.original;
+            if (course.is_practical) {
+                return "Yes";
+            } else {
+                return "No";
+            }
+        },
+
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Practical Subject
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+    },
+    {
+        id: "action",
         enableSorting: false,
         enableHiding: false,
         cell: ({ row }) => {
-            const course = row.original;
+            const subject = row.original;
             const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
             const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-            const deleteCourse = async (teacher: Course) => {
+            const deleteCourse = async (subject: Subject) => {
                 try {
-                    const res = await axios.post(course.delete_url);
+                    const res = await axios.post(subject.delete_url);
                     if (res.status === 200) window.location.reload();
                 } catch (error) {
                     console.log("Error Deleting course", error);
@@ -166,14 +245,15 @@ export const columns: ColumnDef<Course>[] = [
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
                                     This action cannot be undone. This will
-                                    permanently delete course "
-                                    {course.abbreviation}".
+                                    permanently delete subject "
+                                    {subject.subject}
+                                    ".
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                    onClick={() => deleteCourse(course)}
+                                    onClick={() => deleteCourse(subject)}
                                 >
                                     Confirm
                                 </AlertDialogAction>
@@ -189,7 +269,7 @@ export const columns: ColumnDef<Course>[] = [
                                 </AlertDialogTitle>
                             </AlertDialogHeader>
                             <UpdateCourse
-                                course={course}
+                                subject={subject}
                                 callRefresh={handleRefresh}
                             />
                             <AlertDialogFooter>

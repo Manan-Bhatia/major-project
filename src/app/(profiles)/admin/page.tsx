@@ -39,29 +39,62 @@ export default function Admin() {
             console.log("Error getting users data", error);
         }
     };
+    const getSubjectsData = async () => {
+        try {
+            const res = await axios.get(
+                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/list/"
+            );
+            if (res.status === 200) {
+                const data = res.data.slice(0, 3);
+
+                const coursesID: number[] = Array.from(
+                    new Set(
+                        data.map(
+                            (subject: { course: number }) => subject.course
+                        )
+                    )
+                );
+
+                const coursesPromises = coursesID.map(async (courseID) => {
+                    try {
+                        const res = await axios.get(
+                            `https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/${courseID}/detail/`
+                        );
+                        return { [courseID]: res.data.abbreviation };
+                    } catch (error) {
+                        console.log("Error getting course name", error);
+                        return { [courseID]: "" };
+                    }
+                });
+
+                const courses = await Promise.all(coursesPromises);
+
+                courses.forEach((course) => {
+                    data.map((subject: any) => {
+                        let id = subject.course;
+                        if (Number(Object.keys(course)[0]) === id) {
+                            subject.course = course[id];
+                        }
+                    });
+                });
+                setDataSubjects(data);
+            }
+        } catch (error) {
+            console.log("Error getting users data", error);
+        }
+    };
+
     let timeout: NodeJS.Timeout;
     useEffect(() => {
         if (timeout) clearTimeout(timeout);
         timeout = setTimeout(() => {
+            getSubjectsData();
             getTeacherData();
             getCoursesData();
         }, 500);
         return () => clearTimeout(timeout);
     }, []);
-    const data = [
-        {
-            code: "BCA - 312",
-            name: "Data Visualisation and Analytics",
-        },
-        {
-            code: "BCA - 312",
-            name: "Data Visualisation and Analytics",
-        },
-        {
-            code: "BCA - 312",
-            name: "Data Visualisation and Analytics",
-        },
-    ];
+
     return (
         <>
             <div>
@@ -71,9 +104,9 @@ export default function Admin() {
                         props={{
                             title: "Subjects",
                             description: "add, delete or update subjects",
-                            columns: ["Code", "Name"],
-                            displayHeaders: ["Code", "Name"],
-                            data: data,
+                            columns: ["subject", "code", "course"],
+                            displayHeaders: ["Subject", "Code", "Course"],
+                            data: dataSubjects,
                             detailedViewRoute: "/admin/subjects",
                         }}
                     />
