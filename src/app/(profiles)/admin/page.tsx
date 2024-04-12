@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 export default function Admin() {
     const [dataTeahcer, setDataTeahcer] = useState<{}[]>([]);
     const [dataCourses, setDataCourses] = useState<{}[]>([]);
+    const [dataSubjects, setDataSubjects] = useState<{}[]>([]);
     const getTeacherData = async () => {
         try {
             const res = await axios.get(
@@ -33,7 +34,6 @@ export default function Admin() {
             const res = await axios.get(
                 "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/list/"
             );
-            console.log(res.data);
             if (res.status === 200) setDataCourses(res.data);
         } catch (error) {
             console.log("Error getting users data", error);

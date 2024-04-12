@@ -43,7 +43,7 @@ export default function DataTableSkeleton({ columns }: { columns: number }) {
                                         .fill(0)
                                         .map((v, index) => (
                                             <TableCell
-                                                className="py-5"
+                                                className="py-6"
                                                 key={index}
                                             >
                                                 <Skeleton className="h-4 w-1/3" />
@@ -54,8 +54,7 @@ export default function DataTableSkeleton({ columns }: { columns: number }) {
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-between px-2 pt-4">
-                <Skeleton className="w-44 h-5" />
+            <div className="flex items-center justify-end px-2 pt-4">
                 <Skeleton className="w-72 h-5" />
             </div>
         </div>

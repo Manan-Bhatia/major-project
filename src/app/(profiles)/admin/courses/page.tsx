@@ -7,6 +7,12 @@ import DataTableSkeleton from "@/components/ui/data-table-skeleton";
 import { DataTable } from "@/components/ui/data-table";
 import AddCourse from "./addCourse";
 
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
 export default function Subjects() {
     const router = useRouter();
     const [data, setdata] = useState<Course[]>();
@@ -57,11 +63,19 @@ export default function Subjects() {
             {data ? (
                 <DataTable columns={columns} data={data} />
             ) : (
-                <DataTableSkeleton columns={5} />
+                <DataTableSkeleton columns={4} />
             )}
 
-            <h1>Add New Course</h1>
-            <AddCourse callRefresh={handleRefreshData} />
+            <Collapsible className="space-y-4">
+                <CollapsibleTrigger>
+                    <Button variant="outline" size="lg" className="text-xl capitalize">
+                        Add new Course
+                    </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                    <AddCourse callRefresh={handleRefreshData} />
+                </CollapsibleContent>
+            </Collapsible>
         </div>
     );
 }

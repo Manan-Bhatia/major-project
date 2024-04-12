@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const formSchema = z.object({
     name: z.string(),
+    description: z.string(),
     abbreviation: z.string(),
     no_of_semesters: z.coerce
         .number()
@@ -46,6 +47,7 @@ export default function UpdateCourse({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: course.name,
+            description: course.description,
             abbreviation: course.abbreviation,
             no_of_semesters: course.no_of_semesters,
             no_shifts: course.no_shifts,
@@ -53,8 +55,9 @@ export default function UpdateCourse({
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const data = { ...values, password: "password" };
-            const res = await axios.put(course.update_url, { data });
+            const res = await axios.put(course.update_url, {
+                data: { ...values },
+            });
             if (res.status === 200) {
                 setFormStatus({
                     type: "success",
@@ -100,6 +103,22 @@ export default function UpdateCourse({
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Name" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Description"
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

@@ -7,6 +7,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import AddTeacher from "./addTeacher";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@radix-ui/react-collapsible";
 
 export default function Subjects() {
     const router = useRouter();
@@ -60,8 +65,16 @@ export default function Subjects() {
                 <DataTableSkeleton columns={5} />
             )}
 
-            <h1>Add New Teacher</h1>
-            <AddTeacher callRefresh={handleRefreshData} />
+            <Collapsible className="space-y-4">
+                <CollapsibleTrigger>
+                    <Button variant="outline" size="lg" className="text-xl capitalize">
+                        Add new Teacher
+                    </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                    <AddTeacher callRefresh={handleRefreshData} />
+                </CollapsibleContent>
+            </Collapsible>
         </div>
     );
 }

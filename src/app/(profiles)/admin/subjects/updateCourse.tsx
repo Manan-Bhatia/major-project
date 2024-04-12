@@ -15,10 +15,10 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const formSchema = z.object({
     name: z.string(),
-    description: z.string(),
     abbreviation: z.string(),
     no_of_semesters: z.coerce
         .number()
@@ -33,31 +33,32 @@ const formSchema = z.object({
             message: "Number of shifts must be less than or equal to 2",
         }),
 });
-export default function AddCourse({
+import { Course } from "./columns";
+
+export default function UpdateCourse({
+    course,
     callRefresh,
 }: {
+    course: Course;
     callRefresh: () => void;
 }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            description: "",
-            abbreviation: "",
-            no_of_semesters: 0,
-            no_shifts: 0,
+            name: course.name,
+            abbreviation: course.abbreviation,
+            no_of_semesters: course.no_of_semesters,
+            no_shifts: course.no_shifts,
         },
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const res = await axios.post(
-                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/add/",
-                { data: { ...values } }
-            );
-            if (res.status === 201) {
+            const data = { ...values, password: "password" };
+            const res = await axios.put(course.update_url, { data });
+            if (res.status === 200) {
                 setFormStatus({
                     type: "success",
-                    message: ["Course added successfully!"],
+                    message: ["User updated successfully!"],
                 });
                 callRefresh();
                 setTimeout(() => {
@@ -66,8 +67,8 @@ export default function AddCourse({
             }
         } catch (error: any) {
             let message: string[] = [];
-            Object.keys(error.response.data.errors).forEach((key) => {
-                message.push(`${key}: ${error.response.data.errors[key][0]}`);
+            Object.keys(error.response.data).forEach((key) => {
+                message.push(`${key}: ${error.response.data[key][0]}`);
             });
 
             setFormStatus({
@@ -84,8 +85,8 @@ export default function AddCourse({
         message: string[];
     } | null>();
     return (
-        <div className="rounded-lg border flex justify-center py-4">
-            <div className="w-2/5 space-y-6 rounded-lg border p-4">
+        <div>
+            <div>
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
@@ -99,22 +100,6 @@ export default function AddCourse({
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />{" "}
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Description"
-                                            {...field}
-                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -144,8 +129,6 @@ export default function AddCourse({
                                     <FormLabel>Semesters</FormLabel>
                                     <FormControl>
                                         <Input
-                                            type="number"
-                                            className="appearance-none"
                                             placeholder="Semesters"
                                             {...field}
                                         />
@@ -162,8 +145,6 @@ export default function AddCourse({
                                     <FormLabel>Shifts</FormLabel>
                                     <FormControl>
                                         <Input
-                                            type="number"
-                                            className="appearance-none"
                                             placeholder="Shifts"
                                             {...field}
                                         />

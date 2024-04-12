@@ -80,7 +80,7 @@ export default function AddTeacher({
         message: string[];
     } | null>();
     return (
-        <div>
+        <div className="flex justify-center rounded-lg border py-4">
             <div className="w-2/5 space-y-6 rounded-lg border p-4">
                 <Form {...form}>
                     <form

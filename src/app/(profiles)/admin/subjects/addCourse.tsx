@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const formSchema = z.object({
     name: z.string(),
-    description: z.string(),
     abbreviation: z.string(),
     no_of_semesters: z.coerce
         .number()
@@ -29,9 +28,7 @@ const formSchema = z.object({
     no_shifts: z.coerce
         .number()
         .min(0, { message: "Number of shifts must be greater than 0" })
-        .max(2, {
-            message: "Number of shifts must be less than or equal to 2",
-        }),
+        .max(2, { message: "Number of shifts must be less than or equal to 2" }),
 });
 export default function AddCourse({
     callRefresh,
@@ -42,7 +39,6 @@ export default function AddCourse({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            description: "",
             abbreviation: "",
             no_of_semesters: 0,
             no_shifts: 0,
@@ -50,9 +46,10 @@ export default function AddCourse({
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
+            const data = { ...values, password: "password" };
             const res = await axios.post(
                 "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/add/",
-                { data: { ...values } }
+                { data }
             );
             if (res.status === 201) {
                 setFormStatus({
@@ -84,7 +81,7 @@ export default function AddCourse({
         message: string[];
     } | null>();
     return (
-        <div className="rounded-lg border flex justify-center py-4">
+        <div>
             <div className="w-2/5 space-y-6 rounded-lg border p-4">
                 <Form {...form}>
                     <form
@@ -99,22 +96,6 @@ export default function AddCourse({
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />{" "}
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Description"
-                                            {...field}
-                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
