@@ -18,35 +18,43 @@ import { Input } from "@/components/ui/input";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const formSchema = z.object({
-    first_name: z.string(),
-    last_name: z.string(),
-    username: z.string(),
-    email: z.string().email(),
-    is_superuser: z.boolean(),
+    name: z.string(),
+    abbreviation: z.string(),
+    no_of_semesters: z.coerce
+        .number()
+        .min(0, { message: "Number of semesters must be greater than 0" })
+        .max(10, {
+            message: "Number of semesters must be less than or equal to 10",
+        }),
+    no_shifts: z.coerce
+        .number()
+        .min(0, { message: "Number of shifts must be greater than 0" })
+        .max(2, {
+            message: "Number of shifts must be less than or equal to 2",
+        }),
 });
-import { Teacher } from "./columns";
+import { Course } from "./columns";
 
-export default function UpdateTeacher({
-    teacher,
+export default function UpdateCourse({
+    course,
     callRefresh,
 }: {
-    teacher: Teacher;
+    course: Course;
     callRefresh: () => void;
 }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            first_name: teacher.first_name,
-            last_name: teacher.last_name,
-            email: teacher.email,
-            username: teacher.username,
-            is_superuser: teacher.is_superuser,
+            name: course.name,
+            abbreviation: course.abbreviation,
+            no_of_semesters: course.no_of_semesters,
+            no_shifts: course.no_shifts,
         },
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             const data = { ...values, password: "password" };
-            const res = await axios.put(teacher.update_url, { data });
+            const res = await axios.put(course.update_url, { data });
             if (res.status === 200) {
                 setFormStatus({
                     type: "success",
@@ -86,13 +94,26 @@ export default function UpdateTeacher({
                     >
                         <FormField
                             control={form.control}
-                            name="username"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Username</FormLabel>
+                                    <FormLabel>Name</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Name" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="abbreviation"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Abbreviation</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Username"
+                                            placeholder="Abbreviation"
                                             {...field}
                                         />
                                     </FormControl>
@@ -102,13 +123,13 @@ export default function UpdateTeacher({
                         />
                         <FormField
                             control={form.control}
-                            name="first_name"
+                            name="no_of_semesters"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>First Name</FormLabel>
+                                    <FormLabel>Semesters</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="First Name"
+                                            placeholder="Semesters"
                                             {...field}
                                         />
                                     </FormControl>
@@ -118,43 +139,14 @@ export default function UpdateTeacher({
                         />
                         <FormField
                             control={form.control}
-                            name="last_name"
+                            name="no_shifts"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Last Name</FormLabel>
+                                    <FormLabel>Shifts</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Last Name"
+                                            placeholder="Shifts"
                                             {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Email" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="is_superuser"
-                            render={({ field }) => (
-                                <FormItem className="flex items-center gap-2">
-                                    <FormLabel>Is Admin</FormLabel>
-                                    <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
                                         />
                                     </FormControl>
                                     <FormMessage />

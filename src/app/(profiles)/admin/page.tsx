@@ -4,6 +4,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 export default function Admin() {
     const [dataTeahcer, setDataTeahcer] = useState<{}[]>([]);
+    const [dataCourses, setDataCourses] = useState<{}[]>([]);
     const getTeacherData = async () => {
         try {
             const res = await axios.get(
@@ -27,8 +28,25 @@ export default function Admin() {
             console.log("Error getting users data", error);
         }
     };
+    const getCoursesData = async () => {
+        try {
+            const res = await axios.get(
+                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/list/"
+            );
+            console.log(res.data);
+            if (res.status === 200) setDataCourses(res.data);
+        } catch (error) {
+            console.log("Error getting users data", error);
+        }
+    };
+    let timeout: NodeJS.Timeout;
     useEffect(() => {
-        getTeacherData();
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            getTeacherData();
+            getCoursesData();
+        }, 500);
+        return () => clearTimeout(timeout);
     }, []);
     const data = [
         {
@@ -79,9 +97,17 @@ export default function Admin() {
                         props={{
                             title: "Courses",
                             description: "add, delete or update Courses",
-                            columns: ["Code", "Name"],
-                            displayHeaders: ["Code", "Name"],
-                            data: data,
+                            columns: [
+                                "name",
+                                "abbreviation",
+                                "no_of_semesters",
+                            ],
+                            displayHeaders: [
+                                "Name",
+                                "Abbreviation",
+                                "Semesters",
+                            ],
+                            data: dataCourses,
                             detailedViewRoute: "/admin/courses",
                         }}
                     />

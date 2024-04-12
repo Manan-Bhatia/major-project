@@ -15,42 +15,46 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const formSchema = z.object({
-    first_name: z.string(),
-    last_name: z.string(),
-    username: z.string(),
-    email: z.string().email(),
-    is_superuser: z.boolean(),
+    name: z.string(),
+    abbreviation: z.string(),
+    no_of_semesters: z.coerce
+        .number()
+        .min(0, { message: "Number of semesters must be greater than 0" })
+        .max(10, {
+            message: "Number of semesters must be less than or equal to 10",
+        }),
+    no_shifts: z.coerce
+        .number()
+        .min(0, { message: "Number of shifts must be greater than 0" })
+        .max(2, { message: "Number of shifts must be less than or equal to 2" }),
 });
-import { Teacher } from "./columns";
-
-export default function UpdateTeacher({
-    teacher,
+export default function AddCourse({
     callRefresh,
 }: {
-    teacher: Teacher;
     callRefresh: () => void;
 }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            first_name: teacher.first_name,
-            last_name: teacher.last_name,
-            email: teacher.email,
-            username: teacher.username,
-            is_superuser: teacher.is_superuser,
+            name: "",
+            abbreviation: "",
+            no_of_semesters: 0,
+            no_shifts: 0,
         },
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             const data = { ...values, password: "password" };
-            const res = await axios.put(teacher.update_url, { data });
-            if (res.status === 200) {
+            const res = await axios.post(
+                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/add/",
+                { data }
+            );
+            if (res.status === 201) {
                 setFormStatus({
                     type: "success",
-                    message: ["User updated successfully!"],
+                    message: ["Course added successfully!"],
                 });
                 callRefresh();
                 setTimeout(() => {
@@ -59,8 +63,8 @@ export default function UpdateTeacher({
             }
         } catch (error: any) {
             let message: string[] = [];
-            Object.keys(error.response.data).forEach((key) => {
-                message.push(`${key}: ${error.response.data[key][0]}`);
+            Object.keys(error.response.data.errors).forEach((key) => {
+                message.push(`${key}: ${error.response.data.errors[key][0]}`);
             });
 
             setFormStatus({
@@ -78,7 +82,7 @@ export default function UpdateTeacher({
     } | null>();
     return (
         <div>
-            <div>
+            <div className="w-2/5 space-y-6 rounded-lg border p-4">
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
@@ -86,13 +90,26 @@ export default function UpdateTeacher({
                     >
                         <FormField
                             control={form.control}
-                            name="username"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Username</FormLabel>
+                                    <FormLabel>Name</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Name" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="abbreviation"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Abbreviation</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Username"
+                                            placeholder="Abbreviation"
                                             {...field}
                                         />
                                     </FormControl>
@@ -102,13 +119,15 @@ export default function UpdateTeacher({
                         />
                         <FormField
                             control={form.control}
-                            name="first_name"
+                            name="no_of_semesters"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>First Name</FormLabel>
+                                    <FormLabel>Semesters</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="First Name"
+                                            type="number"
+                                            className="appearance-none"
+                                            placeholder="Semesters"
                                             {...field}
                                         />
                                     </FormControl>
@@ -118,43 +137,16 @@ export default function UpdateTeacher({
                         />
                         <FormField
                             control={form.control}
-                            name="last_name"
+                            name="no_shifts"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Last Name</FormLabel>
+                                    <FormLabel>Shifts</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Last Name"
+                                            type="number"
+                                            className="appearance-none"
+                                            placeholder="Shifts"
                                             {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Email" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="is_superuser"
-                            render={({ field }) => (
-                                <FormItem className="flex items-center gap-2">
-                                    <FormLabel>Is Admin</FormLabel>
-                                    <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
                                         />
                                     </FormControl>
                                     <FormMessage />
