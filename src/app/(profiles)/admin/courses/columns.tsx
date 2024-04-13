@@ -29,14 +29,14 @@ export type Course = {
     name: string;
     description: string;
     no_of_semesters: number;
-    no_shifts: number;
+    shift: string;
 };
 export const Fields = [
     "name",
     "description",
     "abbreviation",
     "no_of_semesters",
-    "no_shifts",
+    "shift",
     "pk",
 ];
 
@@ -111,8 +111,8 @@ export const columns: ColumnDef<Course>[] = [
         },
     },
     {
-        accessorKey: "no_shifts",
-        id: "Shifts",
+        accessorKey: "shift",
+        id: "Shift",
         enableColumnFilter: false,
         header: ({ column }) => {
             return (
@@ -122,7 +122,7 @@ export const columns: ColumnDef<Course>[] = [
                         column.toggleSorting(column.getIsSorted() === "asc")
                     }
                 >
-                    Shifts
+                    Shift
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );

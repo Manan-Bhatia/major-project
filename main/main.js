@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron/main");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron/main");
 const serve = require("electron-serve");
 const path = require("path");
 const Store = require("electron-store");
@@ -10,6 +10,18 @@ const appServe = app.isPackaged
     : null;
 
 const storage = new Store();
+
+async function handleFileOpen() {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+        filters: [
+            {
+                name: "csv Files",
+                extensions: ["csv"],
+            },
+        ],
+    });
+    if (!canceled) return filePaths[0];
+}
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -45,6 +57,7 @@ const createWindow = () => {
 };
 
 app.on("ready", () => {
+    ipcMain.handle("dialog:OpenFile", handleFileOpen);
     createWindow();
 });
 

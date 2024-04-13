@@ -2,6 +2,7 @@
 import SummaryCard from "@/components/summaryCard";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import Normalize from "./normalize";
 export default function Admin() {
     const [dataTeahcer, setDataTeahcer] = useState<{}[]>([]);
     const [dataCourses, setDataCourses] = useState<{}[]>([]);
@@ -97,8 +98,8 @@ export default function Admin() {
 
     return (
         <>
-            <div>
-                <div className="flex justify-between items-center gap-10">
+            <div className="space-y-6">
+                <div className="flex justify-between items-center gap-4">
                     <SummaryCard
                         className="flex-1"
                         props={{
@@ -145,6 +146,7 @@ export default function Admin() {
                         }}
                     />
                 </div>
+                <Normalize />
             </div>
         </>
     );

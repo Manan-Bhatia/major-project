@@ -58,7 +58,12 @@ export default function Subjects() {
                             `https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/${courseID}/detail/`
                         );
                         return {
-                            [courseID]: `${res.data.name} (${res.data.abbreviation})`,
+                            [courseID]: `${res.data.abbreviation} ${
+                                res.data.shift
+                            } ${
+                                res.data.description &&
+                                " (" + res.data.description + ")"
+                            }`,
                         };
                     } catch (error) {
                         console.log("Error getting course name", error);

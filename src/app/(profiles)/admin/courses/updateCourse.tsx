@@ -27,12 +27,7 @@ const formSchema = z.object({
         .max(10, {
             message: "Number of semesters must be less than or equal to 10",
         }),
-    no_shifts: z.coerce
-        .number()
-        .min(0, { message: "Number of shifts must be greater than 0" })
-        .max(2, {
-            message: "Number of shifts must be less than or equal to 2",
-        }),
+    shift: z.string(),
 });
 import { Course } from "./columns";
 
@@ -50,7 +45,7 @@ export default function UpdateCourse({
             description: course.description,
             abbreviation: course.abbreviation,
             no_of_semesters: course.no_of_semesters,
-            no_shifts: course.no_shifts,
+            shift: course.shift,
         },
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -158,10 +153,10 @@ export default function UpdateCourse({
                         />
                         <FormField
                             control={form.control}
-                            name="no_shifts"
+                            name="shift"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Shifts</FormLabel>
+                                    <FormLabel>Shift</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="Shifts"

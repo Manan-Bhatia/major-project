@@ -46,7 +46,7 @@ export default function SummaryCard({
                         <TableRow>
                             {props.displayHeaders.map((columnName, index) => (
                                 <TableHead
-                                    className="capitalize md:text-nowrap"
+                                    className="capitalize text-nowrap"
                                     key={index}
                                 >
                                     {columnName}
@@ -61,7 +61,7 @@ export default function SummaryCard({
                                 <TableRow key={index}>
                                     {props.columns.map((key: string, index) => (
                                         <TableCell
-                                            className="font-medium"
+                                            className="font-medium text-balance"
                                             key={index}
                                         >
                                             {row[key.toLowerCase()]}

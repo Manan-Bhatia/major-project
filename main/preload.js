@@ -13,4 +13,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
     send: (channel, args) => {
         ipcRenderer.send(channel, args);
     },
+    OpenFile: () => ipcRenderer.invoke("dialog:OpenFile"),
 });

@@ -18,6 +18,7 @@ declare global {
             on: (event: string, callback: (...args: any[]) => void) => void;
             send: (channel: string, args: any) => void;
             receiveTokenFromMain: (callback: (...args: any[]) => void) => void;
+            OpenFile: () => void;
         };
     }
 }
