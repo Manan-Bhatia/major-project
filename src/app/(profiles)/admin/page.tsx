@@ -5,8 +5,11 @@ import { useState, useEffect } from "react";
 import Normalize from "./normalize";
 export default function Admin() {
     const [dataTeahcer, setDataTeahcer] = useState<{}[]>([]);
+    const [teacherCount, setTeacherCount] = useState<number>();
     const [dataCourses, setDataCourses] = useState<{}[]>([]);
+    const [coursesCount, setCoursesCount] = useState<number>();
     const [dataSubjects, setDataSubjects] = useState<{}[]>([]);
+    const [subjectCount, setSubjectCount] = useState<number>();
     const getTeacherData = async () => {
         try {
             const res = await axios.get(
@@ -14,6 +17,7 @@ export default function Admin() {
             );
             const fields = ["email", "first_name", "last_name", "is_superuser"];
             let data = res.data;
+            setTeacherCount(data.length);
             data = data.map((user: { [key: string]: [value: any] }) => {
                 let obj: {
                     [key: string]: [value: any];
@@ -35,7 +39,10 @@ export default function Admin() {
             const res = await axios.get(
                 "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/list/"
             );
-            if (res.status === 200) setDataCourses(res.data);
+            if (res.status === 200) {
+                setDataCourses(res.data);
+                setCoursesCount(res.data.length);
+            }
         } catch (error) {
             console.log("Error getting users data", error);
         }
@@ -46,6 +53,7 @@ export default function Admin() {
                 "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/list/"
             );
             if (res.status === 200) {
+                setSubjectCount(res.data.length);
                 const data = res.data.slice(0, 3);
 
                 const coursesID: number[] = Array.from(
@@ -109,6 +117,7 @@ export default function Admin() {
                             displayHeaders: ["Subject", "Code", "Course"],
                             data: dataSubjects,
                             detailedViewRoute: "/admin/subjects",
+                            toalCount: subjectCount,
                         }}
                     />
                     <SummaryCard
@@ -124,6 +133,7 @@ export default function Admin() {
                             ],
                             data: dataTeahcer,
                             detailedViewRoute: "/admin/teachers",
+                            toalCount: teacherCount,
                         }}
                     />
                     <SummaryCard
@@ -143,6 +153,7 @@ export default function Admin() {
                             ],
                             data: dataCourses,
                             detailedViewRoute: "/admin/courses",
+                            toalCount: coursesCount,
                         }}
                     />
                 </div>

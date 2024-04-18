@@ -56,6 +56,7 @@ export default function UpdateCourse({
             description: string;
             abbreviation: string;
             pk: number;
+            shift: number;
         }[]
     >();
     const getCourses = async () => {
@@ -64,7 +65,13 @@ export default function UpdateCourse({
                 "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/list/"
             );
             let data = res.data;
-            const Fields = ["name", "description", "abbreviation", "pk"];
+            const Fields = [
+                "name",
+                "description",
+                "abbreviation",
+                "pk",
+                "shift",
+            ];
             data = data.map((course: { [key: string]: [value: any] }) => {
                 let obj: {
                     [key: string]: any;
@@ -135,6 +142,18 @@ export default function UpdateCourse({
         type: "success" | "error";
         message: string[];
     } | null>();
+    const getCourseName = (pk: number) => {
+        const course = courses?.find((course) => course.pk === pk);
+        if (course) {
+            return `${course.abbreviation} (${course.shift}) ${
+                course.description && `(${course.description})`
+            }`;
+        }
+    };
+    const [selectedCourse, setselectedCourse] = useState<string>(
+        subject.course.toString()
+    );
+
     return (
         <div>
             <div>
@@ -183,25 +202,53 @@ export default function UpdateCourse({
                                     <FormItem>
                                         <FormLabel>Course</FormLabel>
                                         <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={subject.course.toString()}
+                                            value={selectedCourse}
+                                            onValueChange={setselectedCourse}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select Course" />
+                                                    <SelectValue placeholder="Select Course">
+                                                        {getCourseName(
+                                                            Number(
+                                                                selectedCourse
+                                                            )
+                                                        )}
+                                                    </SelectValue>
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {courses.map(
-                                                    (course, index) => (
+                                                {courses &&
+                                                    courses.map((course) => (
                                                         <SelectItem
-                                                            key={index}
+                                                            key={course.pk}
                                                             value={course.pk.toString()}
                                                         >
-                                                            {course.name}
+                                                            <div className="flex flex-col">
+                                                                <span>
+                                                                    {
+                                                                        course.name
+                                                                    }{" "}
+                                                                    (
+                                                                    {
+                                                                        course.abbreviation
+                                                                    }
+                                                                    )
+                                                                </span>
+                                                                {course.description && (
+                                                                    <span>
+                                                                        {
+                                                                            course.description
+                                                                        }
+                                                                    </span>
+                                                                )}
+                                                                <span>
+                                                                    {
+                                                                        course.shift
+                                                                    }
+                                                                </span>
+                                                            </div>
                                                         </SelectItem>
-                                                    )
-                                                )}
+                                                    ))}
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />

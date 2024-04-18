@@ -100,7 +100,6 @@ export const columns: ColumnDef<Subject>[] = [
     {
         accessorKey: "semester",
         id: "Semester",
-        enableColumnFilter: false,
         header: ({ column }) => {
             return (
                 <Button

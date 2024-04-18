@@ -29,6 +29,7 @@ export default function SummaryCard({
         displayHeaders: string[];
         data: { [key: string]: string }[];
         detailedViewRoute: string;
+        toalCount: number | undefined;
     };
     className?: string;
 }) {
@@ -87,7 +88,7 @@ export default function SummaryCard({
             </CardContent>
             <CardFooter className="justify-between">
                 {props.data.length > 0 ? (
-                    <p>Total Count: {props.data.length}</p>
+                    <p>Total Count: {props.toalCount}</p>
                 ) : (
                     <Skeleton className="h-5 w-20" />
                 )}
