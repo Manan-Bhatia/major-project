@@ -81,7 +81,6 @@ export default function Subjects() {
                         }
                     });
                 });
-                console.log(data);
                 setdata(data);
             }
         } catch (error) {

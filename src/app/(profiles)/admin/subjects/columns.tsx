@@ -139,7 +139,7 @@ export const columns: ColumnDef<Subject>[] = [
         enableColumnFilter: false,
         cell: ({ row }) => {
             const course = row.original;
-            if (course.is_practical) {
+            if (course.non_university) {
                 return "Yes";
             } else {
                 return "No";

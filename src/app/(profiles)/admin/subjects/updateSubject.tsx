@@ -83,7 +83,7 @@ export default function UpdateCourse({
                 });
                 return obj;
             });
-            console.log(data);
+            console.log(data, subject);
             setCourses(data);
         } catch (error) {
             console.log("Error getting courses", error);
@@ -106,7 +106,7 @@ export default function UpdateCourse({
             semester: subject.semester,
             non_university: subject.non_university,
             is_practical: subject.is_practical,
-            course: subject.pk.toString(),
+            course: subject.course.toString(),
         },
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
