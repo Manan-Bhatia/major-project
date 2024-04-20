@@ -94,6 +94,7 @@ export default function Normalize() {
                     passing: Number(selectedPassoutYear),
                 }
             );
+            console.log(res);
             setResultsAvailable(Object.keys(res.data).map((x) => Number(x)));
         } catch (error) {
             console.log("Error in getting results", error);
@@ -337,6 +338,9 @@ export default function Normalize() {
                                                                             )
                                                                     ),
                                                             }}
+                                                            refreshData={
+                                                                checkResults
+                                                            }
                                                         />
                                                     )}
                                                 </TableCell>
