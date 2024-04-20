@@ -11,18 +11,6 @@ const appServe = app.isPackaged
 
 const storage = new Store();
 
-async function handleFileOpen() {
-    const { canceled, filePaths } = await dialog.showOpenDialog({
-        filters: [
-            {
-                name: "csv Files",
-                extensions: ["csv"],
-            },
-        ],
-    });
-    if (!canceled) return filePaths[0];
-}
-
 const createWindow = () => {
     const win = new BrowserWindow({
         width: 800,
@@ -32,6 +20,10 @@ const createWindow = () => {
             webSecurity: false,
         },
     });
+    ipcMain.on("download-document", (event, url) => {
+        win.webContents.downloadURL(url);
+    });
+
     ipcMain.on("save-token", (event, token) => {
         storage.set("token", token);
     });
@@ -57,7 +49,6 @@ const createWindow = () => {
 };
 
 app.on("ready", () => {
-    ipcMain.handle("dialog:OpenFile", handleFileOpen);
     createWindow();
 });
 

@@ -5,6 +5,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import UploadCSV from "./uploadCSV";
 
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -20,6 +32,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { number } from "zod";
 export default function Normalize() {
     const [courses, setCourses] = useState<
         {
@@ -84,6 +97,11 @@ export default function Normalize() {
     const [selectedPassoutYear, setSelectedPassoutYear] = useState<string>("");
 
     const [resultsAvailable, setResultsAvailable] = useState<number[]>([]);
+    const [resultsPkMapping, setResultsPkMapping] = useState<
+        {
+            [key: number]: number;
+        }[]
+    >([]);
     const checkResults = async () => {
         try {
             setLoading(true);
@@ -94,7 +112,7 @@ export default function Normalize() {
                     passing: Number(selectedPassoutYear),
                 }
             );
-            console.log(res);
+            setResultsPkMapping(res.data);
             setResultsAvailable(Object.keys(res.data).map((x) => Number(x)));
         } catch (error) {
             console.log("Error in getting results", error);
@@ -140,6 +158,33 @@ export default function Normalize() {
             }
         } catch (error) {
             console.log("Error getting users data", error);
+        }
+    };
+
+    const handleDeleteDocument = async (semester: number) => {
+        try {
+            const pk = resultsPkMapping[Number(semester)];
+            const res = await axios.delete(
+                `https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/result/${pk}/delete/`
+            );
+            console.log(res);
+            if (res.status === 200) checkResults();
+        } catch (error) {
+            console.log("Error deleting document", error);
+        }
+    };
+
+    const handleDownloadDocument = async (semester: number) => {
+        try {
+            const pk = resultsPkMapping[Number(semester)];
+            if (pk !== undefined) {
+                const url = `https://resultlymsi.pythonanywhere.com/results/download-result/${pk}`;
+                window.electronAPI.send("download-document", url);
+            } else {
+                throw new Error("No Document is present");
+            }
+        } catch (error) {
+            console.log("Error downloading document", error);
         }
     };
 
@@ -215,7 +260,10 @@ export default function Normalize() {
                                         Upload or Edit
                                     </TableHead>
                                     <TableHead className="w-48">
-                                        Download or View
+                                        Download
+                                    </TableHead>
+                                    <TableHead className="w-48">
+                                        Delete
                                     </TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -224,6 +272,9 @@ export default function Normalize() {
                                     .fill(0)
                                     .map((_, index) => (
                                         <TableRow key={index}>
+                                            <TableCell className="p-6">
+                                                <Skeleton className="h-5" />
+                                            </TableCell>
                                             <TableCell className="p-6">
                                                 <Skeleton className="h-5" />
                                             </TableCell>
@@ -242,8 +293,10 @@ export default function Normalize() {
                     <div className="border rounded-lg flex py-4">
                         <Table className="w-2/5 mx-auto border">
                             <TableCaption>
-                                {getCourseName(Number(selectedCourse))}{" "}
-                                Documents
+                                {getCourseName(Number(selectedCourse))} Batch{" "}
+                                {Number(selectedPassoutYear) -
+                                    getCourseLength(Number(selectedCourse))}
+                                -{Number(selectedPassoutYear)} Documents
                             </TableCaption>
                             <TableHeader>
                                 <TableRow>
@@ -254,7 +307,7 @@ export default function Normalize() {
                                         Upload or Edit
                                     </TableHead>
                                     <TableHead className="w-48">
-                                        Download or View
+                                        Download
                                     </TableHead>
                                     <TableHead className="w-48">
                                         Delete
@@ -347,7 +400,17 @@ export default function Normalize() {
                                                 <TableCell>
                                                     <Button
                                                         variant="outline"
-                                                        className="w-full "
+                                                        className="w-full"
+                                                        disabled={
+                                                            !resultsAvailable.includes(
+                                                                index + 1
+                                                            )
+                                                        }
+                                                        onClick={() =>
+                                                            handleDownloadDocument(
+                                                                index + 1
+                                                            )
+                                                        }
                                                     >
                                                         Download
                                                     </Button>
@@ -356,12 +419,85 @@ export default function Normalize() {
                                                     {resultsAvailable.includes(
                                                         index + 1
                                                     ) && (
-                                                        <Button
-                                                            variant="destructive"
-                                                            className="w-full"
-                                                        >
-                                                            Delete
-                                                        </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger
+                                                                asChild
+                                                            >
+                                                                <Button
+                                                                    variant="destructive"
+                                                                    className="w-full"
+                                                                >
+                                                                    Delete
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>
+                                                                        Are you
+                                                                        absolutely
+                                                                        sure?
+                                                                    </AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        <div>
+                                                                            This
+                                                                            action
+                                                                            cannot
+                                                                            be
+                                                                            undone.
+                                                                            This
+                                                                            will
+                                                                            delete
+                                                                            the
+                                                                            following
+                                                                            document
+                                                                            -
+                                                                        </div>
+                                                                        <div>
+                                                                            {getCourseName(
+                                                                                Number(
+                                                                                    selectedCourse
+                                                                                )
+                                                                            )}
+                                                                        </div>
+                                                                        <div>
+                                                                            Semester{" "}
+                                                                            {index +
+                                                                                1}
+                                                                        </div>
+                                                                        <div>
+                                                                            Batch{" "}
+                                                                            {Number(
+                                                                                selectedPassoutYear
+                                                                            ) -
+                                                                                getCourseLength(
+                                                                                    Number(
+                                                                                        selectedCourse
+                                                                                    )
+                                                                                )}{" "}
+                                                                            -{" "}
+                                                                            {
+                                                                                selectedPassoutYear
+                                                                            }
+                                                                        </div>
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>
+                                                                        Cancel
+                                                                    </AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        onClick={() =>
+                                                                            handleDeleteDocument(
+                                                                                index +
+                                                                                    1
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Confirm
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
                                                     )}
                                                 </TableCell>
                                             </TableRow>

@@ -141,6 +141,10 @@ export default function UploadCSV({
         }
     }
     const fileRef = form.register("excel_file");
+    const [formStatus, setFormStatus] = useState<{
+        type: "success" | "error";
+        message: string;
+    } | null>();
 
     return (
         <div>
@@ -182,6 +186,7 @@ export default function UploadCSV({
                                     <div>Subject Teachers (optional)</div>
                                     {props.subjects.map((subject, index) => (
                                         <FormField
+                                            key={index}
                                             control={form.control}
                                             name={subject.code as any}
                                             render={({ field }) => (
