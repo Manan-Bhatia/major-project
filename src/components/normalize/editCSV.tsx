@@ -41,10 +41,9 @@ export default function EditCSV({
 }) {
     const formSchema = z.object({
         course: z.coerce.number(),
-        passout_year: z.coerce.number(),
-        shift: z.string(),
+        passing: z.coerce.number(),
         semester: z.coerce.number(),
-        excel_file: z
+        updated_excel_file: z
             .any()
             .refine((file) => file?.length === 1, "File is required"),
     });
@@ -53,25 +52,23 @@ export default function EditCSV({
         resolver: zodResolver(formSchema),
         defaultValues: {
             course: props.course,
-            passout_year: props.passing,
-            shift: props.shift || "",
+            passing: props.passing,
             semester: props.semester,
-            excel_file: undefined,
+            updated_excel_file: undefined,
         },
         mode: "onChange",
     });
     useEffect(() => {
         form.setValue("course", props.course);
-        form.setValue("passout_year", props.passing);
-        form.setValue("shift", props.shift || "");
+        form.setValue("passing", props.passing);
         form.setValue("semester", props.semester);
     }, [props]);
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             const formData = new FormData();
-            formData.append("updated_excel_file", values.excel_file[0]);
+            formData.append("updated_excel_file", values.updated_excel_file[0]);
             formData.append("course", values.course.toString());
-            formData.append("passing", values.passout_year.toString());
+            formData.append("passing", values.passing.toString());
             formData.append("semester", values.semester.toString());
             const res = await axios.post(
                 "https://resultlymsi.pythonanywhere.com/results/update-result/",
@@ -82,7 +79,7 @@ export default function EditCSV({
             console.log("Error in updating file", error);
         }
     }
-    const fileRef = form.register("excel_file");
+    const fileRef = form.register("updated_excel_file");
 
     return (
         <div>
@@ -105,7 +102,7 @@ export default function EditCSV({
                         >
                             <FormField
                                 control={form.control}
-                                name="excel_file"
+                                name="updated_excel_file"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
