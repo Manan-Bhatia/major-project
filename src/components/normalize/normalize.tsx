@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import UploadCSV from "./uploadCSV";
+import EditCSV from "./editCSV";
 
 import {
     AlertDialog,
@@ -331,12 +332,52 @@ export default function Normalize() {
                                                     {resultsAvailable.includes(
                                                         index + 1
                                                     ) ? (
-                                                        <Button
-                                                            variant="outline"
-                                                            className="w-full"
-                                                        >
-                                                            Edit
-                                                        </Button>
+                                                        <EditCSV
+                                                            props={{
+                                                                course: Number(
+                                                                    selectedCourse
+                                                                ),
+                                                                courseName:
+                                                                    getCourseName(
+                                                                        Number(
+                                                                            selectedCourse
+                                                                        )
+                                                                    ),
+                                                                passing:
+                                                                    Number(
+                                                                        selectedPassoutYear
+                                                                    ),
+                                                                semester:
+                                                                    index + 1,
+                                                                shift: courses?.find(
+                                                                    (course) =>
+                                                                        course.pk ===
+                                                                        Number(
+                                                                            selectedCourse
+                                                                        )
+                                                                )?.shift,
+                                                                courseLength:
+                                                                    getCourseLength(
+                                                                        Number(
+                                                                            selectedCourse
+                                                                        )
+                                                                    ),
+                                                                courseAbbreviation:
+                                                                    courses?.find(
+                                                                        (
+                                                                            course
+                                                                        ) =>
+                                                                            course.pk ===
+                                                                            Number(
+                                                                                selectedCourse
+                                                                            )
+                                                                    )
+                                                                        ?.abbreviation,
+                                                            }}
+                                                            refreshData={
+                                                                checkResults
+                                                            }
+                                                        />
                                                     ) : (
                                                         <UploadCSV
                                                             props={{

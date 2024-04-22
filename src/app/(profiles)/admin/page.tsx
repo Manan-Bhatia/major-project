@@ -2,7 +2,7 @@
 import SummaryCard from "@/components/summaryCard";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import Normalize from "./normalize";
+import Normalize from "@/components/normalize/normalize";
 export default function Admin() {
     const [dataTeahcer, setDataTeahcer] = useState<{}[]>([]);
     const [teacherCount, setTeacherCount] = useState<number>();
