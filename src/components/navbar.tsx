@@ -35,9 +35,14 @@ export default function NavBar({ switchProfileEnabled = false }) {
     // token
     const [token, setToken] = useState<boolean>(false);
     useEffect(() => {
-        const cookie = getCookie("token");
-        if (cookie != "" && cookie != undefined) setToken(true);
-        else setToken(false);
+        window.electronAPI.send("check-login", "check-login");
+        window.electronAPI.loggedIn((loggedInOrNot) => {
+            if (loggedInOrNot) setToken(true);
+            else setToken(false);
+        });
+        // const cookie = getCookie("token");
+        // if (cookie != "" && cookie != undefined) setToken(true);
+        // else setToken(false);
     }, [pathName]);
 
     const handleAdminLogout = async () => {

@@ -56,7 +56,6 @@ export default function Home() {
                 values
             );
 
-            setSubmitting(false);
             if (res.status === 200) {
                 console.log(res);
                 setformStatus({
@@ -76,6 +75,8 @@ export default function Home() {
             setTimeout(() => {
                 setformStatus(null);
             }, 2000);
+        } finally {
+            setSubmitting(false);
         }
     }
     const [adminLoggedIn, setadminLoggedIn] = useState<boolean>(false);

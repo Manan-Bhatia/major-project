@@ -2,7 +2,7 @@ appId: "io.github.rbfraphael.electron-next"
 productName: "ResultLy"
 copyright: "Copyright (c) 2024 ResultLy"
 win:
-    target: ["dir", "portable", "zip"]
+    target: ["portable"]
     icon: "resources/icon.ico"
 linux:
     target: ["dir", "appimage", "zip"]

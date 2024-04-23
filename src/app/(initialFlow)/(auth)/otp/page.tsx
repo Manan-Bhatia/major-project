@@ -61,7 +61,7 @@ export default function OTP() {
                 });
                 setTimeout(() => {
                     localStorage.removeItem("email");
-                    setCookie("token", res.data.token);
+                    // setCookie("token", res.data.token);
                     try {
                         window.electronAPI.send("save-token", res.data.token);
                     } catch (error) {

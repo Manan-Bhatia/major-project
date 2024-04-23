@@ -25,11 +25,22 @@ const createWindow = () => {
     });
 
     ipcMain.on("save-token", (event, token) => {
-        storage.set("token", token);
+        storage.set("token", { token });
+    });
+    ipcMain.on("check-login", () => {
+        const token = storage.get("token")
+            ? storage.get("token")
+            : { token: "" };
+        win.webContents.send(
+            "loggedIn",
+            token.token && token.token != "" ? true : false
+        );
     });
     ipcMain.on("rendererReady", () => {
-        const token = storage.get("token") || "";
-        win.webContents.send("tokenToRenderer", token);
+        const token = storage.get("token")
+            ? storage.get("token")
+            : { token: "" };
+        win.webContents.send("tokenToRenderer", token.token);
     });
     ipcMain.on("logout", () => {
         storage.delete("token");
