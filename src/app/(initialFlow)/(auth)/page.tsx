@@ -28,7 +28,7 @@ export default function Home() {
             window.electronAPI.send("rendererReady", "ready");
             window.electronAPI.receiveTokenFromMain((token) => {
                 if (token != "" && token != undefined) {
-                    // setCookie("token", token);
+                    setCookie("token", token);
                     router.replace("/switchProfile");
                 }
                 setLoading(false);

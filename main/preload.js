@@ -11,9 +11,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
         });
     },
     loggedIn: (callback) => {
-        ipcRenderer.on("loggedIn", (event, loggedInOrNot) => {
+        ipcRenderer.on("loggedIn", (event, token) => {
             // pass true or false
-            callback(loggedInOrNot);
+            callback(token);
         });
     },
     send: (channel, args) => {

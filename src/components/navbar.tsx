@@ -36,13 +36,10 @@ export default function NavBar({ switchProfileEnabled = false }) {
     const [token, setToken] = useState<boolean>(false);
     useEffect(() => {
         window.electronAPI.send("check-login", "check-login");
-        window.electronAPI.loggedIn((loggedInOrNot) => {
-            if (loggedInOrNot) setToken(true);
+        window.electronAPI.loggedIn((token) => {
+            if (token != "" && token != undefined) setToken(true);
             else setToken(false);
         });
-        // const cookie = getCookie("token");
-        // if (cookie != "" && cookie != undefined) setToken(true);
-        // else setToken(false);
     }, [pathName]);
 
     const handleAdminLogout = async () => {
@@ -57,11 +54,13 @@ export default function NavBar({ switchProfileEnabled = false }) {
 
     return (
         <header className="flex items-center justify-between border-b px-2 md:px-20 md:py-5 py-4">
-            <IoChevronBack
-                size={36}
-                className="cursor-pointer"
-                onClick={goBack}
-            />
+            {pathName === "/" || (
+                <IoChevronBack
+                    size={36}
+                    className="cursor-pointer"
+                    onClick={goBack}
+                />
+            )}
             <span className="text-4xl font-extrabold select-none">
                 ResultLy
             </span>

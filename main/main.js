@@ -31,16 +31,13 @@ const createWindow = () => {
         const token = storage.get("token")
             ? storage.get("token")
             : { token: "" };
-        win.webContents.send(
-            "loggedIn",
-            token.token && token.token != "" ? true : false
-        );
+        win.webContents.send("loggedIn", token.token || "");
     });
     ipcMain.on("rendererReady", () => {
         const token = storage.get("token")
             ? storage.get("token")
             : { token: "" };
-        win.webContents.send("tokenToRenderer", token.token);
+        win.webContents.send("tokenToRenderer", token.token || "");
     });
     ipcMain.on("logout", () => {
         storage.delete("token");

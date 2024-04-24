@@ -157,7 +157,7 @@ export default function Admin() {
                         }}
                     />
                 </div>
-                <Normalize />
+                <Normalize props={{isAdmin: true}}/>
             </div>
         </>
     );

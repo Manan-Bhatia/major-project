@@ -33,8 +33,13 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { number } from "zod";
-export default function Normalize() {
+export default function Normalize({
+    props,
+}: {
+    props: {
+        isAdmin: boolean;
+    };
+}) {
     const [courses, setCourses] = useState<
         {
             abbreviation: string;
@@ -48,9 +53,10 @@ export default function Normalize() {
     const [loading, setLoading] = useState<boolean>(false);
     const getCourses = async () => {
         try {
-            const res = await axios.get(
-                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/list/"
-            );
+            let url = props.isAdmin
+                ? "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/course/list/"
+                : "https://resultlymsi.pythonanywhere.com/results/get_all_courses/";
+            const res = await axios.get(url);
             let data = res.data;
             data = data.map((course: { [key: string]: any }) => {
                 let obj = { ...course };
@@ -138,9 +144,10 @@ export default function Normalize() {
     >([]);
     const getSubjectsData = async () => {
         try {
-            const res = await axios.get(
-                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/list/"
-            );
+            const url = props.isAdmin
+                ? "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/list/"
+                : "https://resultlymsi.pythonanywhere.com/results/get_all_subjects/";
+            const res = await axios.get(url);
             if (res.status === 200) {
                 let data = res.data;
                 data = data.map((subject: { [key: string]: [value: any] }) => {
