@@ -27,6 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function EditCSV({
     props,
     refreshData,
+    disabled,
 }: {
     props: {
         course: number;
@@ -38,6 +39,7 @@ export default function EditCSV({
         courseAbbreviation: string | undefined;
     };
     refreshData: () => void;
+    disabled: boolean;
 }) {
     const formSchema = z.object({
         course: z.coerce.number(),
@@ -85,7 +87,11 @@ export default function EditCSV({
         <div>
             <Dialog>
                 <DialogTrigger asChild>
-                    <Button variant="outline" className="w-full">
+                    <Button
+                        variant="outline"
+                        className="w-full"
+                        disabled={disabled}
+                    >
                         Edit
                     </Button>
                 </DialogTrigger>

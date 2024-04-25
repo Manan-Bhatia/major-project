@@ -199,6 +199,14 @@ export default function Normalize({
     return (
         <div className="space-y-5">
             <h1>Normalize Documents</h1>
+            <span
+                className={
+                    "text-accent-foreground text-sm " +
+                    `${props.isAdmin ? "hidden" : ""}`
+                }
+            >
+                *Editing and deleting documents is allowed only for admins
+            </span>
             <div className="flex gap-4 items-center">
                 {courses ? (
                     <Select
@@ -340,6 +348,9 @@ export default function Normalize({
                                                         index + 1
                                                     ) ? (
                                                         <EditCSV
+                                                            disabled={
+                                                                !props.isAdmin
+                                                            }
                                                             props={{
                                                                 course: Number(
                                                                     selectedCourse
@@ -474,6 +485,9 @@ export default function Normalize({
                                                                 <Button
                                                                     variant="destructive"
                                                                     className="w-full"
+                                                                    disabled={
+                                                                        !props.isAdmin
+                                                                    }
                                                                 >
                                                                     Delete
                                                                 </Button>
