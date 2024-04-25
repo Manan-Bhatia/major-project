@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios";
+import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
     Select,
@@ -12,6 +12,7 @@ import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import MultipleSelector, { Option } from "../ui/mutliple-selector";
+import axios from "axios";
 
 export default function Format1() {
     const [facultyName, setFacultyName] = useState<string>("");
@@ -179,12 +180,67 @@ export default function Format1() {
         setSelectedSection(updatedSelectedSection);
     };
 
-    const handleSubmit = () => {
-        console.log("selectedCourse", selectedCourse);
-        console.log("selectedPassoutYear", selectedPassoutYear);
-        console.log("selectedSemester", selectedSemester);
-        console.log("selectedSection", selectedSection);
-        console.log("selectedSubjects", selectedSubjects);
+    const [submitting, setSubmitting] = useState<boolean>(false);
+    const handleSubmit = async () => {
+        try {
+            setSubmitting(true);
+            let data: {
+                [key: string]: {};
+            } = {};
+            for (let index = 0; index < numberOfEntries; index++) {
+                let obj: {
+                    semester: number;
+                    passing: number;
+                    course: number;
+                    "section-subject": {
+                        [key: string]: string[];
+                    };
+                    faculty_name: string;
+                    shift: string;
+                } = {
+                    semester: 0,
+                    passing: 0,
+                    course: 0,
+                    "section-subject": {},
+                    faculty_name: "",
+                    shift: "",
+                };
+                obj.semester = Number(selectedSemester[index]);
+                obj.passing = Number(selectedPassoutYear[index]);
+                obj.course = Number(selectedCourse[index]);
+                obj.faculty_name = facultyName;
+                obj.shift = "Morning";
+                Object.entries(selectedSubjects[index]).map(([key, value]) => {
+                    obj["section-subject"][key] = value.map((v) => v.value);
+                });
+                data[index] = obj;
+            }
+            const res = await axios.post(
+                "https://resultlymsi.pythonanywhere.com/results/format1/",
+                data,
+                {
+                    responseType: "blob",
+                }
+            );
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute(
+                "download",
+                `${facultyName}-Faculty_Wise_Result_Analysis.docx`
+            );
+
+            document.body.appendChild(link);
+            link.click();
+
+            // Clean up
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error: any) {
+            console.log("Error submitting", error);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -497,7 +553,16 @@ export default function Format1() {
                     ))}
             </div>
 
-            <Button onClick={handleSubmit}>Submit</Button>
+            <Button disabled={submitting} onClick={handleSubmit}>
+                {submitting ? (
+                    <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <span>Please wait</span>
+                    </>
+                ) : (
+                    <span>Submit</span>
+                )}
+            </Button>
         </div>
     );
 }
