@@ -21,19 +21,6 @@ import { setCookie } from "cookies-next";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function Home() {
-    // loading
-    const [loading, setLoading] = useState<boolean>(true);
-    if (typeof window !== undefined)
-        useEffect(() => {
-            window.electronAPI.send("rendererReady", "ready");
-            window.electronAPI.receiveTokenFromMain((token) => {
-                if (token != "" && token != undefined) {
-                    setCookie("token", token);
-                    router.replace("/switchProfile");
-                }
-                setLoading(false);
-            });
-        }, []);
     const router = useRouter();
     // form message
     const [formStatus, setFormStatus] = useState<{
@@ -90,76 +77,65 @@ export default function Home() {
     return (
         <>
             <div className="h-full flex items-center justify-center">
-                {loading ? (
-                    <div className="flex gap-4 items-center">
-                        <h1>Loading...</h1>
-                        <Loader2 className="animate-spin" size={60} />
-                    </div>
-                ) : (
-                    <div className="card">
-                        <h1>
-                            Welcome to the University Result Analysis Portal!
-                        </h1>
-                        <p>
-                            Please enter your credentials to access the portal.
-                        </p>
-                        <Form {...form}>
-                            <form
-                                onSubmit={form.handleSubmit(onSubmit)}
-                                className="space-y-6"
-                            >
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Email</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="Email"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button
-                                    type="submit"
-                                    className="w-full"
-                                    disabled={submitting}
-                                >
-                                    {submitting ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            <span>Please wait</span>
-                                        </>
-                                    ) : (
-                                        <span>Submit</span>
-                                    )}
-                                </Button>
-                                {formStatus && (
-                                    <Alert
-                                        variant={
-                                            formStatus.type === "success"
-                                                ? "default"
-                                                : "destructive"
-                                        }
-                                    >
-                                        <AlertTitle>
-                                            {formStatus.type === "success"
-                                                ? "Success!"
-                                                : "An Error Occurred!"}
-                                        </AlertTitle>
-                                        <AlertDescription>
-                                            {formStatus.message}
-                                        </AlertDescription>
-                                    </Alert>
+                <div className="card">
+                    <h1>Welcome to the University Result Analysis Portal!</h1>
+                    <p>Please enter your credentials to access the portal.</p>
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-6"
+                        >
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="Email"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
                                 )}
-                            </form>
-                        </Form>
-                    </div>
-                )}
+                            />
+                            <Button
+                                type="submit"
+                                className="w-full"
+                                disabled={submitting}
+                            >
+                                {submitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        <span>Please wait</span>
+                                    </>
+                                ) : (
+                                    <span>Submit</span>
+                                )}
+                            </Button>
+                            {formStatus && (
+                                <Alert
+                                    variant={
+                                        formStatus.type === "success"
+                                            ? "default"
+                                            : "destructive"
+                                    }
+                                >
+                                    <AlertTitle>
+                                        {formStatus.type === "success"
+                                            ? "Success!"
+                                            : "An Error Occurred!"}
+                                    </AlertTitle>
+                                    <AlertDescription>
+                                        {formStatus.message}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+                        </form>
+                    </Form>
+                </div>
             </div>
         </>
     );

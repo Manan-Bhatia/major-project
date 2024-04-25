@@ -17,9 +17,6 @@ declare global {
         electronAPI: {
             on: (event: string, callback: (...args: any[]) => void) => void;
             send: (channel: string, args: any) => void;
-            receiveTokenFromMain: (callback: (...args: any[]) => void) => void;
-            loggedIn: (callback: (...args: any[]) => void) => void;
-            OpenFile: () => void;
         };
     }
 }

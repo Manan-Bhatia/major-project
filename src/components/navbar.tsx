@@ -35,11 +35,9 @@ export default function NavBar({ switchProfileEnabled = false }) {
     // token
     const [token, setToken] = useState<boolean>(false);
     useEffect(() => {
-        window.electronAPI.send("check-login", "check-login");
-        window.electronAPI.loggedIn((token) => {
-            if (token != "" && token != undefined) setToken(true);
-            else setToken(false);
-        });
+        const token = getCookie("token");
+        if (token != "" && token != undefined) setToken(true);
+        else setToken(false);
     }, [pathName]);
 
     const handleAdminLogout = async () => {

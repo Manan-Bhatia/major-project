@@ -61,49 +61,63 @@ export default function Format1() {
         return 0;
     };
 
-    const [selectedCourse, setSelectedCourse] = useState<string>("");
-    const [passoutYearOptions, setPassoutYearOptions] = useState<number[]>();
-    useEffect(() => {
-        const courseLength = getCourseLength(Number(selectedCourse));
-        const currentYear = new Date().getFullYear();
-        let arr: number[] = [];
-        for (let i = -courseLength; i <= courseLength; i++)
-            arr.push(currentYear + i);
-        setPassoutYearOptions(arr);
-    }, [selectedCourse]);
-    const [selectedPassoutYear, setSelectedPassoutYear] = useState<string>("");
-    const [selectedSemester, setSelectedSemester] = useState<string>("");
+    const [selectedCourse, setSelectedCourse] = useState<string[]>([""]);
+    const [passoutYearOptions, setPassoutYearOptions] = useState<number[][]>();
+    // useEffect(() => {
+    //     const courseLength = getCourseLength(Number(selectedCourse));
+    //     const currentYear = new Date().getFullYear();
+    //     let arr: number[] = [];
+    //     for (let i = -courseLength; i <= courseLength; i++)
+    //         arr.push(currentYear + i);
+    //     setPassoutYearOptions(arr);
+    // }, [selectedCourse]);
+    const calculatePassoutYearOptions = () => {};
+    const [selectedPassoutYear, setSelectedPassoutYear] = useState<string[]>(
+        []
+    );
+    const [selectedSemester, setSelectedSemester] = useState<string[]>([]);
 
-    const [subjectCodeMapping, setSubjectCodeMapping] = useState<Option[]>([]);
-    const getSubjectCodeMapping = async () => {
-        try {
-            const res = await axios.get(
-                `https://resultlymsi.pythonanywhere.com/results/format1?semester=${selectedSemester}&course=${selectedCourse}`
-            );
-            let arr: { label: string; value: string }[] = [];
-            Object.entries<string>(res.data).map(([key, v]) => {
-                arr.push({
-                    label: v,
-                    value: key,
-                });
-            });
-            setSubjectCodeMapping(arr);
-        } catch (error: any) {
-            console.log("Error getting subject code mapping", error);
-        }
+    const [subjectCodeMapping, setSubjectCodeMapping] = useState<Option[][]>();
+    // const getSubjectCodeMapping = async () => {
+    //     try {
+    //         const res = await axios.get(
+    //             `https://resultlymsi.pythonanywhere.com/results/format1?semester=${selectedSemester}&course=${selectedCourse}`
+    //         );
+    //         let arr: { label: string; value: string }[] = [];
+    //         Object.entries<string>(res.data).map(([key, v]) => {
+    //             arr.push({
+    //                 label: v,
+    //                 value: key,
+    //             });
+    //         });
+    //         setSubjectCodeMapping(arr);
+    //     } catch (error: any) {
+    //         console.log("Error getting subject code mapping", error);
+    //     }
+    // };
+    // useEffect(() => {
+    //     if (
+    //         selectedCourse === "" ||
+    //         selectedPassoutYear === "" ||
+    //         selectedSemester === ""
+    //     )
+    //         return;
+    //     getSubjectCodeMapping();
+    // }, [selectedCourse, selectedPassoutYear, selectedSemester]);
+
+    const [selectedSubjects, setSelectedSubjects] = useState<Option[][]>();
+    const [numberOfEntries, setNumberOfEntries] = useState<number>(1);
+    const increaseNumberOfEntries = () => {
+        setSelectedCourse([...selectedCourse, ""]);
+        setNumberOfEntries(numberOfEntries + 1);
+    };
+    const decreaseNumberOfEntries = (index: number) => {
+        setSelectedCourse(selectedCourse.filter((_, i) => i !== index));
+        setNumberOfEntries(numberOfEntries - 1);
     };
     useEffect(() => {
-        if (
-            selectedCourse === "" ||
-            selectedPassoutYear === "" ||
-            selectedSemester === ""
-        )
-            return;
-        getSubjectCodeMapping();
-    }, [selectedCourse, selectedPassoutYear, selectedSemester]);
-
-    const [selectedSubjects, setSelectedSubjects] = useState<Option[]>();
-    const [numberOfEntries, setNumberOfEntries] = useState<number>(1);
+        console.log(selectedCourse);
+    }, [selectedCourse]);
 
     return (
         <div className="border rounded-lg p-4 flex flex-col gap-4">
@@ -114,10 +128,7 @@ export default function Format1() {
                 placeholder="Enter Faculty Name"
                 className="w-[30%]"
             />
-            <Button
-                variant="secondary"
-                onClick={() => setNumberOfEntries(numberOfEntries + 1)}
-            >
+            <Button variant="secondary" onClick={increaseNumberOfEntries}>
                 Add New Entry
             </Button>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
@@ -133,7 +144,7 @@ export default function Format1() {
                                 <Button
                                     variant="destructive"
                                     onClick={() =>
-                                        setNumberOfEntries(numberOfEntries - 1)
+                                        decreaseNumberOfEntries(index)
                                     }
                                     disabled={numberOfEntries === 1}
                                 >
@@ -143,13 +154,26 @@ export default function Format1() {
                             <div className="flex flex-col items-center gap-4">
                                 {courses ? (
                                     <Select
-                                        value={selectedCourse}
-                                        onValueChange={setSelectedCourse}
+                                        value={selectedCourse[index]}
+                                        onValueChange={(e) => {
+                                            setSelectedCourse([
+                                                ...selectedCourse.slice(
+                                                    0,
+                                                    index
+                                                ),
+                                                e,
+                                                ...selectedCourse.slice(
+                                                    index + 1
+                                                ),
+                                            ]);
+                                        }}
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select course">
                                                 {getCourseName(
-                                                    Number(selectedCourse)
+                                                    Number(
+                                                        selectedCourse[index]
+                                                    )
                                                 )}
                                             </SelectValue>
                                         </SelectTrigger>
@@ -185,7 +209,7 @@ export default function Format1() {
                                 ) : (
                                     <Skeleton className="w-full h-5" />
                                 )}
-                                {passoutYearOptions ? (
+                                {/* {passoutYearOptions ? (
                                     <Select
                                         value={selectedPassoutYear}
                                         onValueChange={setSelectedPassoutYear}
@@ -206,9 +230,9 @@ export default function Format1() {
                                     </Select>
                                 ) : (
                                     <Skeleton className="h-5 w-full" />
-                                )}
+                                )} */}
                             </div>
-                            <div className="flex flex-col items-center gap-4">
+                            {/* <div className="flex flex-col items-center gap-4">
                                 {courses ? (
                                     <Select
                                         value={selectedSemester}
@@ -264,7 +288,7 @@ export default function Format1() {
                                 ) : (
                                     <Skeleton className="h-5 w-full" />
                                 )}
-                            </div>
+                            </div> */}
                         </div>
                     ))}
             </div>

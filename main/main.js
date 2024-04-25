@@ -24,21 +24,6 @@ const createWindow = () => {
         win.webContents.downloadURL(url);
     });
 
-    ipcMain.on("save-token", (event, token) => {
-        storage.set("token", { token });
-    });
-    ipcMain.on("check-login", () => {
-        const token = storage.get("token")
-            ? storage.get("token")
-            : { token: "" };
-        win.webContents.send("loggedIn", token.token || "");
-    });
-    ipcMain.on("rendererReady", () => {
-        const token = storage.get("token")
-            ? storage.get("token")
-            : { token: "" };
-        win.webContents.send("tokenToRenderer", token.token || "");
-    });
     ipcMain.on("logout", () => {
         storage.delete("token");
     });
