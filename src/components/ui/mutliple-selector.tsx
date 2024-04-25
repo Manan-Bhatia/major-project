@@ -350,6 +350,15 @@ const MultipleSelector = React.forwardRef<
             // Using default filter in `cmdk`. We don't have to provide it.
             return undefined;
         }, [creatable, commandProps?.filter]);
+        useEffect(() => {
+            // Function to clear all selected values
+            const clearSelectedValues = () => {
+                setSelected([]);
+            };
+
+            // Call the function to clear selected values
+            clearSelectedValues();
+        }, [arrayOptions]);
 
         return (
             <Command

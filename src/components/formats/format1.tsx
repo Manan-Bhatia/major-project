@@ -31,7 +31,6 @@ export default function Format1() {
             const res = await axios.get(
                 "https://resultlymsi.pythonanywhere.com/results/get_all_courses/"
             );
-            console.log(res.data);
             setCourses(res.data);
         } catch (error) {
             console.log("Error getting courses", error);
@@ -62,62 +61,131 @@ export default function Format1() {
     };
 
     const [selectedCourse, setSelectedCourse] = useState<string[]>([""]);
-    const [passoutYearOptions, setPassoutYearOptions] = useState<number[][]>();
-    // useEffect(() => {
-    //     const courseLength = getCourseLength(Number(selectedCourse));
-    //     const currentYear = new Date().getFullYear();
-    //     let arr: number[] = [];
-    //     for (let i = -courseLength; i <= courseLength; i++)
-    //         arr.push(currentYear + i);
-    //     setPassoutYearOptions(arr);
-    // }, [selectedCourse]);
-    const calculatePassoutYearOptions = () => {};
-    const [selectedPassoutYear, setSelectedPassoutYear] = useState<string[]>(
-        []
-    );
-    const [selectedSemester, setSelectedSemester] = useState<string[]>([]);
+    const [passoutYearOptions, setPassoutYearOptions] = useState<number[][]>([
+        [Number(new Date().getFullYear())],
+    ]);
+    const calculatePassoutYearOptions = (
+        index: number,
+        courseSelected: string
+    ) => {
+        const courseLength = getCourseLength(Number(courseSelected));
+        const currentYear = new Date().getFullYear();
+        let arr: number[] = [];
+        for (let i = -courseLength; i <= courseLength; i++)
+            arr.push(currentYear + i);
 
-    const [subjectCodeMapping, setSubjectCodeMapping] = useState<Option[][]>();
-    // const getSubjectCodeMapping = async () => {
-    //     try {
-    //         const res = await axios.get(
-    //             `https://resultlymsi.pythonanywhere.com/results/format1?semester=${selectedSemester}&course=${selectedCourse}`
-    //         );
-    //         let arr: { label: string; value: string }[] = [];
-    //         Object.entries<string>(res.data).map(([key, v]) => {
-    //             arr.push({
-    //                 label: v,
-    //                 value: key,
-    //             });
-    //         });
-    //         setSubjectCodeMapping(arr);
-    //     } catch (error: any) {
-    //         console.log("Error getting subject code mapping", error);
-    //     }
-    // };
-    // useEffect(() => {
-    //     if (
-    //         selectedCourse === "" ||
-    //         selectedPassoutYear === "" ||
-    //         selectedSemester === ""
-    //     )
-    //         return;
-    //     getSubjectCodeMapping();
-    // }, [selectedCourse, selectedPassoutYear, selectedSemester]);
+        setPassoutYearOptions([
+            ...passoutYearOptions.slice(0, index),
+            arr,
+            ...passoutYearOptions.slice(index + 1),
+        ]);
+    };
+    const [selectedPassoutYear, setSelectedPassoutYear] = useState<string[]>([
+        "",
+    ]);
+    const [selectedSemester, setSelectedSemester] = useState<string[]>([""]);
 
-    const [selectedSubjects, setSelectedSubjects] = useState<Option[][]>();
+    const [subjectCodeMapping, setSubjectCodeMapping] = useState<Option[][]>([
+        [],
+    ]);
+    const getSubjectCodeMapping = async (index: number) => {
+        try {
+            const res = await axios.get(
+                `https://resultlymsi.pythonanywhere.com/results/format1?semester=${selectedSemester[index]}&course=${selectedCourse[index]}`
+            );
+            let arr: { label: string; value: string }[] = [];
+            Object.entries<string>(res.data).map(([key, v]) => {
+                arr.push({
+                    label: v,
+                    value: key,
+                });
+            });
+            setSubjectCodeMapping([
+                ...subjectCodeMapping.slice(0, index),
+                arr,
+                ...subjectCodeMapping.slice(index + 1),
+            ]);
+        } catch (error: any) {
+            console.log("Error getting subject code mapping", error);
+        }
+    };
+    useEffect(() => {
+        for (let index = 0; index < numberOfEntries; index++) {
+            if (
+                selectedCourse[index] !== "" &&
+                selectedPassoutYear[index] !== "" &&
+                selectedSemester[index] !== ""
+            ) {
+                getSubjectCodeMapping(index);
+            }
+        }
+    }, [selectedCourse, selectedPassoutYear, selectedSemester]);
+
+    const [selectedSubjects, setSelectedSubjects] = useState<
+        { [key: string]: Option[] }[]
+    >([{}]);
     const [numberOfEntries, setNumberOfEntries] = useState<number>(1);
+    const [sections, setSections] = useState<string[]>(["A", "B", "C"]);
+    const [selectedSection, setSelectedSection] = useState<string[][]>([[""]]);
     const increaseNumberOfEntries = () => {
         setSelectedCourse([...selectedCourse, ""]);
+        setPassoutYearOptions([
+            ...passoutYearOptions,
+            [Number(new Date().getFullYear())],
+        ]);
+        setSelectedPassoutYear([...selectedPassoutYear, ""]);
+        setSelectedSemester([...selectedSemester, ""]);
+        setSubjectCodeMapping([...subjectCodeMapping, []]);
+        setSelectedSubjects([...selectedSubjects, {}]);
+        setNumberOfSections([...numberOfSections, 1]);
+        setSelectedSection([...selectedSection, [""]]);
         setNumberOfEntries(numberOfEntries + 1);
     };
     const decreaseNumberOfEntries = (index: number) => {
         setSelectedCourse(selectedCourse.filter((_, i) => i !== index));
+        setPassoutYearOptions(passoutYearOptions.filter((_, i) => i !== index));
+        setSelectedPassoutYear(
+            selectedPassoutYear.filter((_, i) => i !== index)
+        );
+        setSelectedSemester(selectedSemester.filter((_, i) => i !== index));
+        setSubjectCodeMapping(subjectCodeMapping.filter((_, i) => i !== index));
+        setSelectedSubjects(selectedSubjects.filter((_, i) => i !== index));
+        setNumberOfSections(numberOfSections.filter((_, i) => i !== index));
+        setSelectedSection(selectedSection.filter((_, i) => i !== index));
         setNumberOfEntries(numberOfEntries - 1);
     };
-    useEffect(() => {
-        console.log(selectedCourse);
-    }, [selectedCourse]);
+    const [numberOfSections, setNumberOfSections] = useState<number[]>([1]);
+
+    const increaseNumberOfSection = (index: number) => {
+        const updatedNumberOfSections = [...numberOfSections];
+        updatedNumberOfSections[index] = updatedNumberOfSections[index] + 1;
+        setNumberOfSections(updatedNumberOfSections);
+        const updatedSelectedSection = [...selectedSection];
+        updatedSelectedSection[index].push("");
+        setSelectedSection(updatedSelectedSection);
+    };
+    const decreaseNumberOfSection = (index: number, sectionIndex: number) => {
+        const updatedSelectedSubjects = [...selectedSubjects];
+        delete updatedSelectedSubjects[index][
+            selectedSection[index][sectionIndex]
+        ];
+        setSelectedSubjects(updatedSelectedSubjects);
+        const updatedNumberOfSections = [...numberOfSections];
+        updatedNumberOfSections[index] = updatedNumberOfSections[index] - 1;
+        setNumberOfSections(updatedNumberOfSections);
+
+        const updatedSelectedSection = [...selectedSection];
+        updatedSelectedSection[index].splice(sectionIndex, 1);
+        setSelectedSection(updatedSelectedSection);
+    };
+
+    const handleSubmit = () => {
+        console.log("selectedCourse", selectedCourse);
+        console.log("selectedPassoutYear", selectedPassoutYear);
+        console.log("selectedSemester", selectedSemester);
+        console.log("selectedSection", selectedSection);
+        console.log("selectedSubjects", selectedSubjects);
+    };
 
     return (
         <div className="border rounded-lg p-4 flex flex-col gap-4">
@@ -147,6 +215,7 @@ export default function Format1() {
                                         decreaseNumberOfEntries(index)
                                     }
                                     disabled={numberOfEntries === 1}
+                                    title="Delete Entry"
                                 >
                                     Delete
                                 </Button>
@@ -166,6 +235,10 @@ export default function Format1() {
                                                     index + 1
                                                 ),
                                             ]);
+                                            calculatePassoutYearOptions(
+                                                index,
+                                                e
+                                            );
                                         }}
                                     >
                                         <SelectTrigger>
@@ -209,49 +282,78 @@ export default function Format1() {
                                 ) : (
                                     <Skeleton className="w-full h-5" />
                                 )}
-                                {/* {passoutYearOptions ? (
+                                {passoutYearOptions ? (
                                     <Select
-                                        value={selectedPassoutYear}
-                                        onValueChange={setSelectedPassoutYear}
+                                        value={selectedPassoutYear[index]}
+                                        onValueChange={(e) => {
+                                            setSelectedPassoutYear([
+                                                ...selectedPassoutYear.slice(
+                                                    0,
+                                                    index
+                                                ),
+                                                e,
+                                                ...selectedPassoutYear.slice(
+                                                    index + 1
+                                                ),
+                                            ]);
+                                        }}
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select passout year" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {passoutYearOptions.map((year) => (
-                                                <SelectItem
-                                                    key={year}
-                                                    value={year.toString()}
-                                                >
-                                                    {year}
-                                                </SelectItem>
-                                            ))}
+                                            {passoutYearOptions[index].map(
+                                                (year) => (
+                                                    <SelectItem
+                                                        key={year}
+                                                        value={year.toString()}
+                                                    >
+                                                        {year}
+                                                    </SelectItem>
+                                                )
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 ) : (
                                     <Skeleton className="h-5 w-full" />
-                                )} */}
+                                )}
                             </div>
-                            {/* <div className="flex flex-col items-center gap-4">
+                            <div className="flex flex-col items-center gap-4">
                                 {courses ? (
                                     <Select
-                                        value={selectedSemester}
-                                        onValueChange={setSelectedSemester}
+                                        value={selectedSemester[index]}
+                                        onValueChange={(e) => {
+                                            setSelectedSemester([
+                                                ...selectedSemester.slice(
+                                                    0,
+                                                    index
+                                                ),
+                                                e,
+                                                ...selectedSemester.slice(
+                                                    index + 1
+                                                ),
+                                            ]);
+                                        }}
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select semster">
-                                                Semester {selectedSemester}
+                                                Semester{" "}
+                                                {selectedSemester[index]}
                                             </SelectValue>
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {selectedCourse === "" ? (
+                                            {selectedCourse[index] === "" ? (
                                                 <SelectItem value="0" disabled>
                                                     Select course first
                                                 </SelectItem>
                                             ) : (
                                                 Array(
                                                     getCourseLength(
-                                                        Number(selectedCourse)
+                                                        Number(
+                                                            selectedCourse[
+                                                                index
+                                                            ]
+                                                        )
                                                     ) * 2
                                                 )
                                                     .fill(0)
@@ -272,28 +374,130 @@ export default function Format1() {
                                     <Skeleton className="h-5 w-full" />
                                 )}
 
-                                {courses ? (
-                                    <MultipleSelector
-                                        value={selectedSubjects}
-                                        onChange={setSelectedSubjects}
-                                        options={subjectCodeMapping}
-                                        hidePlaceholderWhenSelected
-                                        placeholder="Select Subjects"
-                                        emptyIndicator={
-                                            <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                                                No Subjects Found
-                                            </p>
-                                        }
-                                    />
-                                ) : (
-                                    <Skeleton className="h-5 w-full" />
-                                )}
-                            </div> */}
+                                <Button
+                                    variant="secondary"
+                                    className="w-full"
+                                    onClick={() =>
+                                        increaseNumberOfSection(index)
+                                    }
+                                >
+                                    Add Section
+                                </Button>
+                                {Array(numberOfSections[index])
+                                    .fill(0)
+                                    .map((_v, sectionIndex) => (
+                                        <div
+                                            key={sectionIndex}
+                                            className="w-full flex flex-col xl:flex-row gap-2 items-stretch"
+                                        >
+                                            <div className="xl:w-1/3 w-full">
+                                                <Select
+                                                    value={
+                                                        selectedSection[index][
+                                                            sectionIndex
+                                                        ]
+                                                    }
+                                                    onValueChange={(e) => {
+                                                        const updatedSelectedSection =
+                                                            [
+                                                                ...selectedSection,
+                                                            ];
+                                                        updatedSelectedSection[
+                                                            index
+                                                        ][sectionIndex] = e;
+                                                        setSelectedSection(
+                                                            updatedSelectedSection
+                                                        );
+                                                    }}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Section" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {sections.map(
+                                                            (
+                                                                section,
+                                                                index
+                                                            ) => (
+                                                                <SelectItem
+                                                                    key={index}
+                                                                    value={
+                                                                        section
+                                                                    }
+                                                                >
+                                                                    {section}
+                                                                </SelectItem>
+                                                            )
+                                                        )}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            {courses ? (
+                                                <MultipleSelector
+                                                    value={
+                                                        selectedSubjects[index][
+                                                            selectedSection[
+                                                                index
+                                                            ][sectionIndex]
+                                                        ]
+                                                    }
+                                                    onChange={(e) => {
+                                                        const updatedSelectedSubjects =
+                                                            [
+                                                                ...selectedSubjects,
+                                                            ];
+                                                        updatedSelectedSubjects[
+                                                            index
+                                                        ][
+                                                            selectedSection[
+                                                                index
+                                                            ][sectionIndex]
+                                                        ] = e;
+                                                        setSelectedSubjects(
+                                                            updatedSelectedSubjects
+                                                        );
+                                                    }}
+                                                    options={
+                                                        subjectCodeMapping[
+                                                            index
+                                                        ]
+                                                    }
+                                                    hidePlaceholderWhenSelected
+                                                    placeholder="Select Subjects"
+                                                    emptyIndicator={
+                                                        <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                                                            No Subjects Found
+                                                        </p>
+                                                    }
+                                                />
+                                            ) : (
+                                                <Skeleton className="h-5 w-full" />
+                                            )}
+                                            <Button
+                                                variant="destructive"
+                                                title="Delete Section"
+                                                onClick={() =>
+                                                    decreaseNumberOfSection(
+                                                        index,
+                                                        sectionIndex
+                                                    )
+                                                }
+                                                disabled={
+                                                    numberOfSections[index] ===
+                                                    1
+                                                }
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    ))}
+                            </div>
                         </div>
                     ))}
             </div>
 
-            <Button>Submit</Button>
+            <Button onClick={handleSubmit}>Submit</Button>
         </div>
     );
 }
