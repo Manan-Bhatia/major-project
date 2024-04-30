@@ -9,10 +9,10 @@ export default function Teacher() {
         <>
             <div className="flex flex-col gap-4">
                 <h1>Teacher</h1>
-                <Format6 />
-                {/* <Format1 />
+                <Format1 />
                 <Format2 />
-                <Format7 /> */}
+                <Format6 />
+                <Format7 />
                 <Normalize props={{ isAdmin: false }} />
             </div>
         </>
