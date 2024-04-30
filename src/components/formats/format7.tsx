@@ -185,7 +185,7 @@ export default function Format7() {
 
     return (
         <div className="border rounded-lg p-4 flex flex-col gap-4">
-            <h1 className="capitalize">Class Wise Top10 Bottom 10</h1>
+            <h1 className="capitalize">Class Wise Top 10 Bottom 10</h1>
             <Input
                 value={facultyName}
                 onChange={(e) => setFacultyName(e.target.value)}
