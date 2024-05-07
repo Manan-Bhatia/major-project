@@ -77,11 +77,7 @@ export default function Format2() {
     }, [selectedCourse]);
     const [selectedPassoutYear, setSelectedPassoutYear] = useState<string>("");
     const [selectedSemester, setSelectedSemester] = useState<string>("");
-    const [sectionOptions, setSectionOptions] = useState<string[]>([
-        "A",
-        "B",
-        "C",
-    ]);
+    const [sectionOptions, setSectionOptions] = useState<string[]>(["A", "B"]);
     const [selectedSection, setSelectedSection] = useState<string>("");
 
     const [subjectCodeNameMapping, setSubjectCodeNameMapping] = useState<{

@@ -122,7 +122,7 @@ export default function Format6() {
         { [key: string]: Option[] }[]
     >([{}]);
     const [numberOfEntries, setNumberOfEntries] = useState<number>(1);
-    const [sections, setSections] = useState<string[]>(["A", "B", "C"]);
+    const [sections, setSections] = useState<string[]>(["A", "B"]);
     const [selectedSection, setSelectedSection] = useState<string[][]>([[""]]);
     useEffect(() => {
         setSelectedSubjects(
