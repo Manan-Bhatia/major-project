@@ -31,7 +31,7 @@ export type Subject = {
     code: string;
     credit: number;
     semester: number;
-    non_university: boolean;
+    is_not_university: boolean;
     is_practical: boolean;
 };
 export const Fields = [
@@ -134,12 +134,12 @@ export const columns: ColumnDef<Subject>[] = [
         },
     },
     {
-        accessorKey: "non_university",
+        accessorKey: "is_not_university",
         id: "Non University Subject",
         enableColumnFilter: false,
         cell: ({ row }) => {
             const course = row.original;
-            if (course.non_university) {
+            if (course.is_not_university) {
                 return "Yes";
             } else {
                 return "No";

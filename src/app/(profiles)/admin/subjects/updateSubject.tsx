@@ -36,7 +36,7 @@ const formSchema = z.object({
         .max(10, {
             message: "Semester must be less than or equal to 10",
         }),
-    non_university: z.coerce.boolean(),
+    is_not_university: z.coerce.boolean(),
     is_practical: z.coerce.boolean(),
     course: z.string(),
 });
@@ -104,7 +104,7 @@ export default function UpdateCourse({
             code: subject.code,
             credit: subject.credit,
             semester: subject.semester,
-            non_university: subject.non_university,
+            is_not_university: subject.is_not_university,
             is_practical: subject.is_practical,
             course: subject.course.toString(),
         },
@@ -291,7 +291,7 @@ export default function UpdateCourse({
                             />
                             <FormField
                                 control={form.control}
-                                name="non_university"
+                                name="is_not_university"
                                 render={({ field }) => (
                                     <FormItem className="flex items-center gap-2">
                                         <FormLabel>
