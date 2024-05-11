@@ -179,7 +179,7 @@ export default function AddSubject({
                                     <FormLabel>Code</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Abbreviation"
+                                            placeholder="Code"
                                             {...field}
                                         />
                                     </FormControl>
