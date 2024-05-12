@@ -362,6 +362,16 @@ const MultipleSelector = React.forwardRef<
 
         return (
             <Command
+                onFocus={(event: any) => {
+                    setOpen(true);
+                    inputRef.current?.focus();
+                    triggerSearchOnFocus && onSearch?.(debouncedSearchTerm);
+                    inputProps?.onFocus?.(event);
+                }}
+                onBlur={(event: any) => {
+                    setOpen(false);
+                    inputProps?.onBlur?.(event);
+                }}
                 {...commandProps}
                 onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                     handleKeyDown(e);
@@ -433,16 +443,6 @@ const MultipleSelector = React.forwardRef<
                                     setInputValue(value);
                                     inputProps?.onValueChange?.(value);
                                 }}
-                                onBlur={(event: any) => {
-                                    setOpen(false);
-                                    inputProps?.onBlur?.(event);
-                                }}
-                                onFocus={(event: any) => {
-                                    setOpen(true);
-                                    triggerSearchOnFocus &&
-                                        onSearch?.(debouncedSearchTerm);
-                                    inputProps?.onFocus?.(event);
-                                }}
                                 placeholder={
                                     hidePlaceholderWhenSelected &&
                                     selected.length !== 0
@@ -450,7 +450,7 @@ const MultipleSelector = React.forwardRef<
                                         : placeholder
                                 }
                                 className={cn(
-                                    "ml-2 flex-1 bg-transparent outline-none placeholder:text-foreground hover:cursor-pointer caret-transparent",
+                                    "ml-2 flex-1 bg-transparent outline-none placeholder:text-foreground hover:cursor-pointer",
                                     inputProps?.className
                                 )}
                             />

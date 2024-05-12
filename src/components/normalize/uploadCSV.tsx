@@ -1,3 +1,4 @@
+import MultipleSelector from "../ui/mutliple-selector";
 import {
     Dialog,
     DialogContent,
@@ -23,6 +24,8 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Toaster } from "../ui/toaster";
+import { useToast } from "../ui/use-toast";
 
 export default function UploadCSV({
     props,
@@ -40,6 +43,7 @@ export default function UploadCSV({
     };
     refreshData: () => void;
 }) {
+    const { toast } = useToast();
     const subjectFields: Record<string, z.ZodType<string>> = {};
     props.subjects.forEach((subject) => {
         subjectFields[subject.code] = z.string();
@@ -116,7 +120,84 @@ export default function UploadCSV({
         });
         return footers;
     };
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    const [isElective, setIsElective] = useState<boolean>(false);
+    const [studentEnrollmentMapping, setStudentEnrollmentMapping] = useState<
+        { label: string; value: string }[]
+    >([]);
+    const [electiveSubjects, setElectiveSubjects] = useState<
+        { [key: string]: string }[]
+    >([]);
+    const [elective_list, setElective_list] = useState<
+        { [key: string]: string[] }[]
+    >([]);
+    async function checkElective(values: z.infer<typeof formSchema>) {
+        try {
+            const formData = new FormData();
+            formData.append("excel_file", values.excel_file[0]);
+            formData.append("course", values.course.toString());
+            formData.append("passing", values.passing.toString());
+            formData.append("semester", values.semester.toString());
+            const res = await axios.post(
+                "https://resultlymsi.pythonanywhere.com/results/check_elective/",
+                formData
+            );
+            if (res.status === 200) {
+                if (res.data.status && !isElective) {
+                    setIsElective(true);
+                    toast({
+                        title: "Elective subjects found",
+                        description:
+                            "Please enter elective student details before proceeding further",
+                    });
+                    const data: { label: string; value: string }[] = [];
+                    Object.entries(
+                        res.data.enrollment_name_mapping as Record<
+                            string,
+                            string
+                        >
+                    ).map(([key, value]) => {
+                        let obj: {
+                            label: string;
+                            value: string;
+                        } = {
+                            label: key.slice(0, 3) + "-" + value,
+                            value: key,
+                        };
+                        data.push(obj);
+                    });
+                    setStudentEnrollmentMapping(data);
+                    let subject_name_mapping: { [key: string]: string }[] = [];
+                    (
+                        res.data.elective_list as {
+                            [key: string]: string;
+                        }[]
+                    ).map((entry) => {
+                        let obj: { [key: string]: string } = {};
+                        Object.keys(entry).map((subjectCode) => {
+                            obj[subjectCode] =
+                                subjectCode +
+                                " - " +
+                                (
+                                    res.data.subject_name_mapping as {
+                                        [key: string]: string;
+                                    }
+                                )[subjectCode];
+                        });
+                        subject_name_mapping.push(obj);
+                    });
+                    setElectiveSubjects(subject_name_mapping);
+                    setElective_list(
+                        res.data.elective_list as { [key: string]: string[] }[]
+                    );
+                } else {
+                    await Normlize(values);
+                }
+            }
+        } catch (error: any) {
+            console.log("Error in check elective", error);
+        }
+    }
+    async function Normlize(values: z.infer<typeof formSchema>) {
         try {
             const formData = new FormData();
             formData.append("excel_file", values.excel_file[0]);
@@ -131,13 +212,18 @@ export default function UploadCSV({
                 "footers_to_add",
                 JSON.stringify(generateFooters(props.subjects, values))
             );
+            formData.append("is_elective", isElective.valueOf().toString());
+            formData.append(
+                "json_string_data",
+                JSON.stringify({ elective_list })
+            );
             const res = await axios.post(
                 "https://resultlymsi.pythonanywhere.com/results/normalize/",
                 formData
             );
             if (res.status === 200) refreshData();
-        } catch (error: any) {
-            console.log("Error in normalization", error);
+        } catch (error) {
+            console.log("Error in normalize", error);
         }
     }
     const fileRef = form.register("excel_file");
@@ -148,6 +234,7 @@ export default function UploadCSV({
 
     return (
         <div>
+            <Toaster />
             <Dialog>
                 <DialogTrigger asChild>
                     <Button variant="outline" className="w-full">
@@ -160,9 +247,10 @@ export default function UploadCSV({
                             Upload new document
                         </DialogTitle>
                     </DialogHeader>
+
                     <Form {...form}>
                         <form
-                            onSubmit={form.handleSubmit(onSubmit)}
+                            onSubmit={form.handleSubmit(checkElective)}
                             className="space-y-4"
                         >
                             <FormField
@@ -211,7 +299,64 @@ export default function UploadCSV({
                                     ))}
                                 </>
                             )}
-                            <Button type="submit">Submit</Button>
+                            {isElective && (
+                                <>
+                                    <h2>
+                                        Enter Student Details for Elective
+                                        Subjects
+                                    </h2>
+                                    {electiveSubjects.map((subjects, index) => (
+                                        <div key={index} className="space-y-4">
+                                            {Object.entries(subjects).map(
+                                                ([key, value]) => (
+                                                    <div
+                                                        key={key}
+                                                        className="flex flex-col gap-2"
+                                                    >
+                                                        <div>{value}</div>
+                                                        <MultipleSelector
+                                                            options={
+                                                                studentEnrollmentMapping
+                                                            }
+                                                            hidePlaceholderWhenSelected
+                                                            placeholder="Select Students"
+                                                            emptyIndicator={
+                                                                <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                                                                    No Student
+                                                                    Found
+                                                                </p>
+                                                            }
+                                                            onChange={(e) => {
+                                                                let data: string[] =
+                                                                    [];
+                                                                e.map(
+                                                                    (subject) =>
+                                                                        data.push(
+                                                                            subject.value
+                                                                        )
+                                                                );
+                                                                const updatedElectiveList =
+                                                                    [
+                                                                        ...elective_list,
+                                                                    ];
+                                                                updatedElectiveList[
+                                                                    index
+                                                                ][key] = data;
+                                                                setElective_list(
+                                                                    updatedElectiveList
+                                                                );
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                    ))}
+                                </>
+                            )}
+                            <Button className="w-full" type="submit">
+                                Submit
+                            </Button>
                         </form>
                     </Form>
                 </DialogContent>
