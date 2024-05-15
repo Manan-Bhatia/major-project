@@ -1,7 +1,8 @@
+"use client";
 import { useState, useEffect } from "react";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import axios from "axios";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Select,
     SelectContent,
@@ -9,10 +10,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-export default function Format2() {
+export default function Format7() {
     const [submitting, setSubmitting] = useState<boolean>(false);
 
     const [facultyName, setFacultyName] = useState<string>("");
@@ -86,13 +87,17 @@ export default function Format2() {
     const [subjectTeacherMapping, setSubjectTeacherMapping] = useState<{
         [key: string]: string;
     }>({});
+    const [practicalSubjectsCodes, setPracticalSubjectsCodes] = useState<
+        string[]
+    >([]);
     const getSubjectTeacherMapping = async () => {
         try {
             const res = await axios.get(
-                `https://resultlymsi.pythonanywhere.com/results/format2?semester=${selectedSemester}&course=${selectedCourse}`
+                `https://resultlymsi.pythonanywhere.com/results/format7?semester=${selectedSemester}&course=${selectedCourse}`
             );
-            setSubjectCodeNameMapping(res.data[1]);
-            console.log(res.data[1]);
+            setSubjectCodeNameMapping(res.data.Subjects);
+            setPracticalSubjectsCodes(Object.keys(res.data.Practicals));
+            console.log(res.data.Practicals);
         } catch (error: any) {
             console.log("Error getting subject teacher mapping", error);
         }
@@ -124,26 +129,29 @@ export default function Format2() {
                 course: number;
                 semester: number;
                 passing: number;
-                section: string;
+                admitted: number;
+                Section: string;
                 faculty_name: string;
-                batch: string;
-                subjectTeacherMapping: { [key: string]: string };
+                Practicals: string[];
+                Subjects: string[];
+                "Faculty Names": string[];
             } = {
                 course: Number(selectedCourse),
                 semester: Number(selectedSemester),
                 passing: Number(selectedPassoutYear),
-                section: selectedSection,
-                faculty_name: facultyName,
-                batch: String(
+                admitted:
                     Number(selectedPassoutYear) -
-                        getCourseLength(Number(selectedCourse)) +
-                        "-" +
-                        Number(selectedPassoutYear)
+                    getCourseLength(Number(selectedCourse)),
+                Section: selectedSection,
+                faculty_name: facultyName,
+                Practicals: practicalSubjectsCodes,
+                Subjects: Object.keys(removeEmptyValues(subjectTeacherMapping)),
+                "Faculty Names": Object.values(
+                    removeEmptyValues(subjectTeacherMapping)
                 ),
-                subjectTeacherMapping: removeEmptyValues(subjectTeacherMapping),
             };
             const res = await axios.post(
-                "https://resultlymsi.pythonanywhere.com/results/format2/",
+                "https://resultlymsi.pythonanywhere.com/results/format7/",
                 data,
                 {
                     responseType: "blob",
@@ -156,7 +164,7 @@ export default function Format2() {
                 "download",
                 `${getCourseName(
                     Number(selectedCourse)
-                )}_Sem${selectedSemester}_Section${selectedSection}-Class_Wise_Result_Analysis.docx`
+                )}_Sem${selectedSemester}_Section${selectedSection}-Class_Wise_Top10_Bottom_10.docx`
             );
 
             document.body.appendChild(link);
@@ -174,7 +182,7 @@ export default function Format2() {
 
     return (
         <div className="border rounded-lg p-4 flex flex-col gap-4">
-            <h1 className="capitalize">Class wise result analysis</h1>
+            <h1 className="capitalize">Class Wise Top 10 Bottom 10</h1>
             <Input
                 value={facultyName}
                 onChange={(e) => setFacultyName(e.target.value)}

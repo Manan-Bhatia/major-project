@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -8,10 +9,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "../ui/skeleton";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import MultipleSelector, { Option } from "../ui/mutliple-selector";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import MultipleSelector, { Option } from "@/components/ui/mutliple-selector";
 import axios from "axios";
 
 export default function Format11() {
