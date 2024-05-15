@@ -100,6 +100,10 @@ export default function EditCSV({
                         <DialogTitle className="capitalize">
                             Upload updated document
                         </DialogTitle>
+                        <DialogDescription>
+                            Marks cannot be updated. To update marks please
+                            delete the file and upload new file!
+                        </DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
                         <form
