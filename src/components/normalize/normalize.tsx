@@ -140,21 +140,22 @@ export default function Normalize({
             subject: string;
             code: string;
             semester: string;
+            course: number;
         }[]
     >([]);
     const getSubjectsData = async () => {
         try {
-            const url = props.isAdmin
-                ? "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/list/"
-                : "https://resultlymsi.pythonanywhere.com/results/get_all_subjects/";
+            const url =
+                "http://resultlymsi.pythonanywhere.com/results/alladdedsubjects/subjects/";
+
             const res = await axios.get(url);
             if (res.status === 200) {
-                let data = res.data;
+                let data = res.data.results;
                 data = data.map((subject: { [key: string]: [value: any] }) => {
                     let obj: {
                         [key: string]: any;
                     } = {};
-                    const Fields = ["subject", "code", "semester"];
+                    const Fields = ["subject", "code", "semester", "course"];
                     Fields.forEach((field) => {
                         if (subject.hasOwnProperty(field)) {
                             obj[field] = subject[field];
@@ -443,11 +444,15 @@ export default function Normalize({
                                                                         (
                                                                             subject
                                                                         ) =>
+                                                                            subject.course ===
+                                                                                Number(
+                                                                                    selectedCourse
+                                                                                ) &&
                                                                             subject.semester ===
-                                                                            String(
-                                                                                index +
-                                                                                    1
-                                                                            )
+                                                                                String(
+                                                                                    index +
+                                                                                        1
+                                                                                )
                                                                     ),
                                                             }}
                                                             refreshData={
