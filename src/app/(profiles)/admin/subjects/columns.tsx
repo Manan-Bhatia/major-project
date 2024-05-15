@@ -42,7 +42,7 @@ export const Fields = [
     "is_not_university",
     "semester",
     "is_practical",
-    "pk",
+    "id",
 ];
 
 export const columns: ColumnDef<Subject>[] = [

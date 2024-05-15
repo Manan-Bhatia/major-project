@@ -51,11 +51,11 @@ export default function Admin() {
     const getSubjectsData = async () => {
         try {
             const res = await axios.get(
-                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/list/"
+                "http://resultlymsi.pythonanywhere.com/results/alladdedsubjects/subjects/"
             );
             if (res.status === 200) {
-                setSubjectCount(res.data.length);
-                const data = res.data.slice(0, 3);
+                setSubjectCount(res.data.results.length);
+                const data = res.data.results.slice(0, 3);
 
                 const coursesID: number[] = Array.from(
                     new Set(
@@ -158,7 +158,7 @@ export default function Admin() {
                         }}
                     />
                 </div>
-                <Normalize props={{isAdmin: true}}/>
+                <Normalize props={{ isAdmin: true }} />
                 <StudentDetails />
             </div>
         </>

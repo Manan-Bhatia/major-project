@@ -21,10 +21,10 @@ export default function Subjects() {
     const getData = async () => {
         try {
             const res = await axios.get(
-                "https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/list/"
+                "http://resultlymsi.pythonanywhere.com/results/alladdedsubjects/subjects/"
             );
             if (res.status === 200) {
-                let data = res.data;
+                let data = res.data.results;
                 data = data.map((subject: { [key: string]: [value: any] }) => {
                     let obj: {
                         [key: string]: any;
@@ -36,11 +36,11 @@ export default function Subjects() {
                     });
                     obj[
                         "delete_url"
-                    ] = `https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/${obj.pk}/delete/`;
+                    ] = `https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/${obj.id}/delete/`;
 
                     obj[
                         "update_url"
-                    ] = `https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/${obj.pk}/change/`;
+                    ] = `https://resultlymsi.pythonanywhere.com/accounts/api_admin/results/subject/${obj.id}/change/`;
                     return obj;
                 });
 
