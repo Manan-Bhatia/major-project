@@ -21,14 +21,14 @@ export default function Teacher() {
                     image={Format1}
                 />
                 <FormatPreviewCard
+                    name="Faculty wise result analysis (Internal & External)"
+                    route="/teacher/format11"
+                    image={Format11}
+                />
+                <FormatPreviewCard
                     name="Faculty Wise Top 10 Bottom 10"
                     route="/teacher/format6"
                     image={Format6}
-                />
-                <FormatPreviewCard
-                    name="Class Wise Top 10 Bottom 10"
-                    route="/teacher/format7"
-                    image={Format7}
                 />
                 <h2>Management Wise</h2>
                 <FormatPreviewCard
@@ -37,14 +37,14 @@ export default function Teacher() {
                     image={Format2}
                 />
                 <FormatPreviewCard
+                    name="Class Wise Top 10 Bottom 10"
+                    route="/teacher/format7"
+                    image={Format7}
+                />
+                <FormatPreviewCard
                     name="Governing Body"
                     route="/teacher/format5"
                     image={Format5}
-                />
-                <FormatPreviewCard
-                    name="Faculty wise result analysis (Internal & External)"
-                    route="/teacher/format11"
-                    image={Format11}
                 />
                 <Normalize props={{ isAdmin: false }} />
             </div>
