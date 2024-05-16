@@ -88,6 +88,7 @@ export default function Format13() {
     }, [selectedCourse]);
     const [selectedPassoutYear, setSelectedPassoutYear] = useState<string>("");
     const [selectedSemester, setSelectedSemester] = useState<string>("");
+    const [selectedSection, setSelectedSection] = useState<string>("");
 
     const handleSubmit = async () => {
         try {
@@ -97,6 +98,7 @@ export default function Format13() {
                 passing: Number(selectedPassoutYear),
                 semester: Number(selectedSemester),
                 subject: selectedSubject,
+                section: selectedSection,
                 faculty_name: facultyName,
             };
             console.log(obj);
@@ -289,6 +291,20 @@ export default function Format13() {
                 ) : (
                     <Skeleton className="h-5 w-full" />
                 )}
+                <Select
+                    value={selectedSection}
+                    onValueChange={setSelectedSection}
+                >
+                    <SelectTrigger>
+                        {selectedSection
+                            ? `Section ${selectedSection}`
+                            : "Select Section"}
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="A">Section A</SelectItem>
+                        <SelectItem value="B">Section B</SelectItem>
+                    </SelectContent>
+                </Select>
 
                 <Button disabled={submitting} onClick={handleSubmit}>
                     {submitting ? (
