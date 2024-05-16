@@ -112,7 +112,7 @@ export default function Format13() {
             link.href = url;
             link.setAttribute(
                 "download",
-                `${facultyName}-Faculty_Wise_Result_Analysis.docx`
+                `${facultyName}-New_Format_Faculty_Result_Analysis.docx`
             );
 
             document.body.appendChild(link);
