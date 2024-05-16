@@ -5,6 +5,7 @@ import Format6 from "/public/Format6.png";
 import Format7 from "/public/Format7.png";
 import Format5 from "/public/Format5.png";
 import Format11 from "/public/Format11.png";
+import Format13 from "/public/Format13.jpg";
 import FormatPreviewCard from "@/components/formatPreviewCard";
 
 import Normalize from "@/components/normalize/normalize";
@@ -29,6 +30,11 @@ export default function Teacher() {
                     name="Faculty Wise Top 10 Bottom 10"
                     route="/teacher/format6"
                     image={Format6}
+                />
+                <FormatPreviewCard
+                    name="New Format Faculty Result Analysis"
+                    route="/teacher/format13"
+                    image={Format13}
                 />
                 <h2>Management Wise</h2>
                 <FormatPreviewCard
