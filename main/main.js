@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog } = require("electron/main");
 const serve = require("electron-serve");
 const path = require("path");
 const Store = require("electron-store");
+const { shell } = require("electron");
 
 const appServe = app.isPackaged
     ? serve({
