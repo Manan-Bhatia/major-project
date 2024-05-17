@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { BsGraphUp } from "react-icons/bs";
 import { FaUser, FaUserCog } from "react-icons/fa";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -249,6 +250,23 @@ export default function Home() {
                             )}
                         </DialogContent>
                     </Dialog>
+                    <h3>OR</h3>
+                    <div
+                        onClick={() => {
+                            const link = document.createElement("a");
+                            link.target = "_blank";
+                            link.href =
+                                "https://visualizeresultly.streamlit.app/";
+                            document.body.appendChild(link);
+                            link.click();
+                            // Clean up
+                            link.parentNode?.removeChild(link);
+                        }}
+                        className="cursor-pointer bg-foreground text-background aspect-square flex flex-col items-center gap-2 justify-center hover:rounded-lg rounded-[2rem] p-8 h-full transition-all duration-150 "
+                    >
+                        <BsGraphUp size={64} />
+                        <h3>Visualize Data</h3>
+                    </div>
                 </div>
             </div>
         </>

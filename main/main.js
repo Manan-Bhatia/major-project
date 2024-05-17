@@ -27,6 +27,10 @@ const createWindow = () => {
     ipcMain.on("logout", () => {
         storage.delete("token");
     });
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        shell.openExternal(url);
+        return { action: "deny" };
+    });
 
     if (app.isPackaged) {
         appServe(win).then(() => {
