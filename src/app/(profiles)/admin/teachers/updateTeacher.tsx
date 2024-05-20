@@ -22,6 +22,7 @@ const formSchema = z.object({
     last_name: z.string(),
     username: z.string(),
     email: z.string().email(),
+    is_staff: z.boolean(),
     is_superuser: z.boolean(),
 });
 import { Teacher } from "./columns";
@@ -40,12 +41,14 @@ export default function UpdateTeacher({
             last_name: teacher.last_name,
             email: teacher.email,
             username: teacher.username,
-            is_superuser: teacher.is_superuser,
+            is_staff: teacher.is_staff,
+            is_superuser: teacher.is_staff,
         },
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             const data = { ...values, password: "password" };
+            data.is_superuser = data.is_staff;
             const res = await axios.put(teacher.update_url, { data });
             if (res.status === 200) {
                 setFormStatus({
@@ -147,7 +150,7 @@ export default function UpdateTeacher({
                         />
                         <FormField
                             control={form.control}
-                            name="is_superuser"
+                            name="is_staff"
                             render={({ field }) => (
                                 <FormItem className="flex items-center gap-2">
                                     <FormLabel>Is Admin</FormLabel>

@@ -24,7 +24,7 @@ import UpdateTeacher from "./updateTeacher";
 export type Teacher = {
     first_name: string;
     last_name: string;
-    is_superuser: boolean;
+    is_staff: boolean;
     email: string;
     pk: number;
     delete_url: string;
@@ -35,7 +35,7 @@ export const Fields = [
     "first_name",
     "last_name",
     "email",
-    "is_superuser",
+    "is_staff",
     "pk",
     "username",
 ];
@@ -110,7 +110,7 @@ export const columns: ColumnDef<Teacher>[] = [
         },
     },
     {
-        accessorKey: "is_superuser",
+        accessorKey: "is_staff",
         id: "Is Admin",
         enableColumnFilter: false,
         header: ({ column }) => {

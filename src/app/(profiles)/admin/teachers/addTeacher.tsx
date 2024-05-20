@@ -26,6 +26,7 @@ const formSchema = z.object({
         .refine((email) => email.endsWith("@msijanakpuri.com"), {
             message: "Email must end with @msijanakpuri.com",
         }),
+    is_staff: z.boolean(),
     is_superuser: z.boolean(),
 });
 export default function AddTeacher({
@@ -40,12 +41,14 @@ export default function AddTeacher({
             last_name: "",
             email: "",
             username: "",
+            is_staff: false,
             is_superuser: false,
         },
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             const data = { ...values, password: "password" };
+            data.is_superuser = data.is_staff;
             const res = await axios.post(
                 "https://resultlymsi.pythonanywhere.com/accounts/api_admin/accounts/customuser/add/",
                 { data }
@@ -150,7 +153,7 @@ export default function AddTeacher({
                         />
                         <FormField
                             control={form.control}
-                            name="is_superuser"
+                            name="is_staff"
                             render={({ field }) => (
                                 <FormItem className="flex items-center gap-2">
                                     <FormLabel>Is Admin</FormLabel>

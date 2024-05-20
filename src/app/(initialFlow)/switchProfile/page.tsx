@@ -102,6 +102,31 @@ export default function Home() {
             if (res.status === 403) setadminLoggedIn(false);
         } catch (error) {}
     };
+    const handleAdminPassReset = async () => {
+        try {
+            const res = await axios.post(
+                "https://resultlymsi.pythonanywhere.com/accounts/resetadminpassword/"
+            );
+
+            if (res.status === 200) {
+                setformStatus({
+                    type: "success",
+                    message: `We have sent you a mail on ${res.data.email} with updated password!`,
+                });
+                setTimeout(() => {
+                    setformStatus(null);
+                }, 2000);
+            }
+        } catch (error: any) {
+            setformStatus({
+                type: "error",
+                message: error.response.data.message || "An Error Occurred!",
+            });
+            setTimeout(() => {
+                setformStatus(null);
+            }, 2000);
+        }
+    };
     return (
         <>
             <div className="h-full flex flex-col items-center justify-center gap-8">
@@ -219,6 +244,16 @@ export default function Home() {
                                                 </Alert>
                                             )}
                                             <DialogFooter>
+                                                <Button
+                                                    type="button"
+                                                    variant="link"
+                                                    onClick={
+                                                        handleAdminPassReset
+                                                    }
+                                                >
+                                                    Reset Password
+                                                </Button>
+
                                                 <DialogClose asChild>
                                                     <Button
                                                         type="button"
@@ -227,6 +262,7 @@ export default function Home() {
                                                         Close
                                                     </Button>
                                                 </DialogClose>
+
                                                 <Button
                                                     type="submit"
                                                     variant="default"

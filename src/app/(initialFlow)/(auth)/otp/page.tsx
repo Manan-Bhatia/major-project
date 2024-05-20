@@ -61,7 +61,6 @@ export default function OTP() {
                 });
                 setTimeout(() => {
                     localStorage.removeItem("email");
-                    setCookie("token", res.data.token);
                     router.replace("/switchProfile");
                 }, 1000);
             }

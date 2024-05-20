@@ -34,11 +34,33 @@ export default function NavBar({ switchProfileEnabled = false }) {
 
     // token
     const [token, setToken] = useState<boolean>(false);
+    let timeout: NodeJS.Timeout;
     useEffect(() => {
-        const token = getCookie("token");
-        if (token != "" && token != undefined) setToken(true);
-        else setToken(false);
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            checkLoginStatus();
+        }, 1000);
+        return () => clearTimeout(timeout);
     }, [pathName]);
+    const checkLoginStatus = async () => {
+        try {
+            const res = await axios.get(
+                "https://resultlymsi.pythonanywhere.com/accounts/test_login/"
+            );
+            if (res.status === 200) setToken(true);
+            if (res.status === 403) setToken(false);
+        } catch (error) {}
+    };
+
+    const handleLogout = async () => {
+        try {
+            const res = await axios.get(
+                "https://resultlymsi.pythonanywhere.com/accounts/logout/"
+            );
+        } catch (error) {
+            console.log("Error logging out", error);
+        }
+    };
 
     const handleAdminLogout = async () => {
         try {
@@ -78,8 +100,8 @@ export default function NavBar({ switchProfileEnabled = false }) {
                         className="flex items-center gap-2 capitalize text-base"
                         onClick={() => {
                             window.electronAPI.send("logout", "logout");
+                            handleLogout();
                             handleAdminLogout();
-                            deleteCookie("token");
                             router.replace("/");
                         }}
                     >
